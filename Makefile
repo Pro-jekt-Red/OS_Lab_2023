@@ -1,6 +1,6 @@
 .PHONY: clean
 
-out:
+out: case_all
 	gcc -o calc calc.c
 	./calc < case_all > out
 
