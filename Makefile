@@ -8,7 +8,7 @@ casegen:
 	gcc -o casegen casegen.c
 
 case_add: casegen
-	./casegen	add	100	> case_add
+	./casegen add 100 > case_add
 case_sub: casegen
 	./casegen sub 100 > case_sub
 case_mul: casegen
