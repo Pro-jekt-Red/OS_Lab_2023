@@ -15,7 +15,7 @@ case_mul: casegen
 	./casegen mul 100 > case_mul
 case_div: casegen
 	./casegen div 100 > case_div
-case_all: casegen
+case_all: case_add case_sub case_mul case_div
 	cat case_add case_sub case_mul case_div > case_all
 
 clean:
