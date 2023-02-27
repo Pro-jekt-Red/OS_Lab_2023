@@ -2,12 +2,21 @@
 
 size_t strlen(const char *s)
 {
-	panic("please implement");
+	size_t len = 0;
+	while (*s++)
+		len++;
+	return len;
 }
 
 char *strcpy(char *dst, const char *src)
 {
-	panic("please implement");
+	char *res = dst;
+	while (*src)
+	{
+		*dst++ = *src++;
+	}
+	*dst = '\0';
+	return res;
 }
 
 char *strncpy(char *dst, const char *src, size_t n)
