@@ -1,0 +1,6 @@
+compile:
+	cd ./code; make
+	gcc ./*.o -o fibo
+
+clean:
+	cd ./code; make clean
