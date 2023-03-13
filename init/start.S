@@ -11,6 +11,7 @@ EXPORT(_start)
 	/* hint: you can reference the memory layout in include/mmu.h */
 	/* set up the kernel stack */
 	/* Exercise 1.3: Your code here. (1/2) */
-
+	la    sp, 0x7f3fe000
 	/* jump to mips_init */
 	/* Exercise 1.3: Your code here. (2/2) */
+	j    0x80010000
