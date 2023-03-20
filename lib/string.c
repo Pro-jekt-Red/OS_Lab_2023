@@ -106,10 +106,11 @@ void output_sprintf(void *data, const char *buf, size_t len) {
 	}
 }
 
-void sprintf(char *buf, const char *fmt, ...) {
+int sprintf(char *buf, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap, fmt);
 	vprintfmt(output_sprintf, (void*)buf, fmt, ap);
 	va_end(ap);
+	return strlen(buf);
 }
 

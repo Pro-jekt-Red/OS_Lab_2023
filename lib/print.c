@@ -23,9 +23,9 @@ void vprintfmt(fmt_callback_t out, void *data, const char *fmt, va_list ap)
 		/* Exercise 1.4: Your code here. (1/8) */
 		while (*fmt != '%')
 		{
+			out(data, fmt, 1);
 			if (*fmt == '\0')
 				return;
-			out(data, fmt, 1);
 			fmt++;
 		}
 
