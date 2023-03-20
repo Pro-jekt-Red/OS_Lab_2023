@@ -1,4 +1,8 @@
 #include <types.h>
+#include <print.h>
+#include <drivers/dev_cons.h>
+#include <printk.h>
+#include <trap.h>
 
 void *memcpy(void *dst, const void *src, size_t n) {
 	void *dstaddr = dst;
@@ -95,3 +99,17 @@ int strcmp(const char *p, const char *q) {
 
 	return 0;
 }
+
+void output_sprintf(void *data, const char *buf, size_t len) {
+	for (int i = 0; i < len; i++) {
+		printcharc(buf[i]);
+	}
+}
+
+void sprintf(char *buf, const char *fmt, ...) {
+	va_list ap;
+	va_start(ap, fmt);
+	vprintfmt(output_sprintf, (void*)buf, fmt, ap);
+	va_end(ap);
+}
+
