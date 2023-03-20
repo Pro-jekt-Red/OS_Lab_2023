@@ -100,17 +100,22 @@ int strcmp(const char *p, const char *q) {
 	return 0;
 }
 
+int cnt;
 void output_sprintf(void *data, const char *buf, size_t len) {
+	char* dst = (char*)data;
 	for (int i = 0; i < len; i++) {
-		printcharc(buf[i]);
+		dst[cnt++] = buf[i];
+//		printcharc(dst[i]);
 	}
 }
 
 int sprintf(char *buf, const char *fmt, ...) {
+	cnt = 0;
 	va_list ap;
 	va_start(ap, fmt);
-	vprintfmt(output_sprintf, (void*)buf, fmt, ap);
+	vprintfmt(output_sprintf, buf, fmt, ap);
 	va_end(ap);
+//	printk("%d %d %d\n",strlen(buf), strlen(temp), cnt);
 	return strlen(buf);
 }
 

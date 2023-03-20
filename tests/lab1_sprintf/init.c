@@ -1,5 +1,5 @@
 void sprintf_1_check() {
-	char str[100];
+	char str[100] = "1234567890";
 	sprintf(str, "%d\n", 12321);
 	printk("%s", str);
 	sprintf(str, "%c\n", 97);

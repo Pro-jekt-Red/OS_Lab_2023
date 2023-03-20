@@ -211,6 +211,7 @@ void print_char(fmt_callback_t out, void *data, char c, int length, int ladjust)
 		{
 			out(data, &space, 1);
 		}
+
 	}
 	else
 	{
