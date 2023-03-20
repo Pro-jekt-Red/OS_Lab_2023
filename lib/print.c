@@ -85,7 +85,7 @@ void vprintfmt(fmt_callback_t out, void *data, const char *fmt, va_list ap)
 		switch (*fmt)
 		{
 		case 'R':
-			print_char(out, data, '(', width, ladjust);
+			print_char(out, data, '(', 1, 0);
 			if (long_flag)
 			{
 				num = va_arg(ap, long int);
@@ -100,7 +100,7 @@ void vprintfmt(fmt_callback_t out, void *data, const char *fmt, va_list ap)
 				num = -num;
 			}
 			print_num(out, data, num, 10, neg_flag, width, ladjust, padc, 0);
-			print_char(out, data, ',', width, ladjust);
+			print_char(out, data, ',', 1, 0);
 			if (long_flag)
 			{
 				num = va_arg(ap, long int);
@@ -115,7 +115,7 @@ void vprintfmt(fmt_callback_t out, void *data, const char *fmt, va_list ap)
 				num = -num;
 			}
 			print_num(out, data, num, 10, neg_flag, width, ladjust, padc, 0);
-			print_char(out, data, ')', width, ladjust);
+			print_char(out, data, ')', 1, 0);
 			break;
 			
 		case 'b':
