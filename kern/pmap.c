@@ -536,11 +536,32 @@ void swap_init() {
 	}
 }
 
+int da_cnt = 0;
 // Interface for 'Passive Swap Out'
 struct Page *swap_alloc(Pde *pgdir, u_int asid) {
 	// Step 1: Ensure free page
 	if (LIST_EMPTY(&page_free_swapable_list)) {
-		/* Your Code Here (1/3) */
+		u_char *da = disk_alloc();
+		u_int pp = da_cnt++%16;
+		u_int pa = 0x3900000+pp*BY2PG;
+		memcpy(da, pa, BY2PG);
+		for (u_long i = 0; i <= 0x03FF; i++) {	
+			pgdir_entryp = pgdir + i;
+			if (pgdir_entryp && (*pgdir_entryp & PTE_V)){
+				for (u_long j = 0; j <= 0x03FF; j++) {
+					pte = (Pte *)KADDR(PTE_ADDR(*pgdir_entryp)) + j;
+					if (pte && (*pte & PTE_V)) {
+						if (pa == (((*pte)>>20)<<20))
+							//tlb_invalidate(asid, pte);
+							*pte &= ~PTE_V;
+							*pte |= PTE_SWP;
+							*pte &= (1<<20) - 1;
+							*pte |= da;
+						}
+				}
+			}
+		}
+		LIST_INSERT_HEAD(&page_free_swapable_list, pa, pp_link);
 	}
 
 	// Step 2: Get a free page and clear it
@@ -555,7 +576,6 @@ struct Page *swap_alloc(Pde *pgdir, u_int asid) {
 static int is_swapped(Pde *pgdir, u_long va) {
 	Pde *pgdir_entryp;
 	Pte *pte;
-	struct Page *pp;
 	pgdir_entryp = pgdir + PDX(va);
 	if (!pgdir_entryp) return 0;
 	if (!(*pgdir_entryp & PTE_V)) return 0;
@@ -565,7 +585,13 @@ static int is_swapped(Pde *pgdir, u_long va) {
 }
 
 static void swap(Pde *pgdir, u_int asid, u_long va) {
-	/* Your Code Here (3/3) */
+	struct Page *pp = swap_alloc(pgdir, asid);
+	Pde *pgdir_entryp;
+	Pte *pte;
+	pgdir_entryp = pgdir + PDX(va);
+	if (!pgdir_entryp) return 0;
+	if (!(*pgdir_entryp & PTE_V)) return 0;
+	pte = (Pte *)KADDR(PTE_ADDR(*pgdir_entryp)) + PTX(va);
 }
 
 Pte swap_lookup(Pde *pgdir, u_int asid, u_long va) {
