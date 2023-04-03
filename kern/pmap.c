@@ -17,7 +17,7 @@ struct Page_list page_free_list; /* Free list of physical pages */
 
 
 u_int page_perm_stat(Pde *pgdir, struct Page *pp, u_int perm_mask) {
-	int count = 0;
+	u_int count = 0;
 	Pde *pgdir_entryp;
 	Pte *pte;
 	for (int i = 0; i <= 0x03FF; i++) {	
