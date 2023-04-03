@@ -22,7 +22,7 @@ u_int page_perm_stat(Pde *pgdir, struct Page *pp, u_int perm_mask) {
 	Pte *pte;
 	for (int i = 0; i <= 0x03FF; i++) {	
 		pgdir_entryp = pgdir + i;
-		if (*pgdir_entryp & PTE_V == 0) continue;
+		if (*pgdir_entryp & PTE_V){
 		for (int i = 0; i <= 0x03FF; i++) {
 			pte = (Pte *)KADDR(PTE_ADDR(*pgdir_entryp)) + i;
 			if (*pte & PTE_V) {
@@ -30,7 +30,7 @@ u_int page_perm_stat(Pde *pgdir, struct Page *pp, u_int perm_mask) {
 				if ((*pte & (page2pa(pp) | perm_mask)) == (page2pa(pp) | perm_mask))
 			    		count++;
 			}
-		}
+		}}
 		
 	}
 	return count;
