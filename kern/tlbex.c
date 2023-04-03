@@ -43,7 +43,7 @@ Pte _do_tlb_refill(u_long va, u_int asid) {
 
 	/* Exercise 2.9: Your code here. */
     
-	while ((pte = page_lookup(cur_pgdir, va, asid)) == NULL) {
+	while (page_lookup(cur_pgdir, va, &pte) == NULL) {
 		passive_alloc(va, cur_pgdir, asid);
 	}
 
