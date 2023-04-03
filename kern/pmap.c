@@ -99,13 +99,14 @@ void page_init(void) {
 
 	/* Step 3: Mark all memory below `freemem` as used (set `pp_ref` to 1) */
 	/* Exercise 2.3: Your code here. (3/4) */
-	for (int i = 0; i < freemem / BY2PG; i++) {
+	int size = PADDR(freemem) / BY2PG;
+	for (int i = 0; i < size; i++) {
 		pages[i].pp_ref = 1;
 	}
 
 	/* Step 4: Mark the other memory as free. */
 	/* Exercise 2.3: Your code here. (4/4) */
-	for (int i = freemem / BY2PG; i < npage; i++) {
+	for (int i = size; i < npage; i++) {
 		pages[i].pp_ref = 0;
 		LIST_INSERT_HEAD(&page_free_list, &pages[i], pp_link);
 	}
@@ -132,6 +133,7 @@ int page_alloc(struct Page **new) {
 		return -E_NO_MEM;
 	}
 
+	pp = LIST_FIRST(&page_free_list);
 	LIST_REMOVE(pp, pp_link);
 
 	/* Step 2: Initialize this page with zero.
@@ -401,7 +403,7 @@ void physical_memory_manage_check(void) {
 	j = 0;
 	// printk("into test\n");
 	while (p != NULL) {
-		//      printk("%d %d\n",p->pp_ref,answer2[j]);
+		    //  printk("%d %d\n",p->pp_ref,answer2[j]);
 		assert(p->pp_ref == answer2[j++]);
 		p = LIST_NEXT(p, pp_link);
 	}
