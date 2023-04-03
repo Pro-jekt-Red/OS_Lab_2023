@@ -24,10 +24,11 @@ u_int page_perm_stat(Pde *pgdir, struct Page *pp, u_int perm_mask) {
 	{	
 		pgdir_entryp = pgdir + i;
 		if (*pgdir_entryp & PTE_V){
-			// pte = (Pte *)KADDR(PTE_ADDR(*pgdir_entryp));
+			printk("%d %d %d %d\n", *pgdir_entryp,page2pa(pp),perm_mask);
+			pte = (Pte *)KADDR(PTE_ADDR(*pgdir_entryp));
 			// page_lookup(*pgdir, u_long va, Pte **ppte);
 			// if (pa2page(*pte) == pp)
-			if (*pgdir_entryp & (page2pa(pp) | perm_mask) == (page2pa(pp) | perm_mask))
+			if ((*pgdir_entryp & (page2pa(pp) | perm_mask)) == (page2pa(pp) | perm_mask))
 			    count++;
 		}
 	}
