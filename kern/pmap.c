@@ -579,9 +579,7 @@ struct Page *swap_alloc(Pde *pgdir, u_int asid)
 	if (LIST_EMPTY(&page_free_swapable_list))
 	{
 		u_char *da = disk_alloc();
-		u_int pp = da_cnt++ % 16;
-		u_int pa = 0x3900000 + pp * BY2PG;
-		memcpy(da, KADDR(pa), BY2PG);
+		u_long pa = 0x3900000 + da_cnt++ % 16 * BY2PG;
 		for (u_long i = 0; i <= 0x03FF; i++)
 		{
 			Pde *pgdir_entryp = pgdir + i;
@@ -592,18 +590,19 @@ struct Page *swap_alloc(Pde *pgdir, u_int asid)
 					Pte *pte = (Pte *)KADDR(PTE_ADDR(*pgdir_entryp)) + j;
 					if (pte && (*pte & PTE_V))
 					{
-						if (pa == (((*pte) >> 20) << 20))
+						if (pa == (((*pte) >> 12) << 12))
 						{
 							tlb_invalidate(asid, pte);
 							*pte &= ~PTE_V;
 							*pte |= PTE_SWP;
-							*pte &= (1 << 20) - 1;
-							*pte |= (int)da;
+							*pte &= (1 << 12) - 1;
+							*pte |= (u_long)da;
 						}
 					}
 				}
 			}
 		}
+		memcpy(da, KADDR(pa), BY2PG);
 		LIST_INSERT_HEAD(&page_free_swapable_list, pa2page(pa), pp_link);
 	}
 
@@ -633,29 +632,32 @@ static int is_swapped(Pde *pgdir, u_long va)
 
 static void swap(Pde *pgdir, u_int asid, u_long va)
 {
-	Pte *pte;
-	pgdir_walk(pgdir, va, 0, &pte);
-	u_long swap_pa = page2pa(swap_alloc(pgdir, asid));
-	u_long da = PTE_ADDR(*pte);
-	memcpy(KADDR(swap_pa), da, BY2PG);
-	for (int i = 0; i < 1024; i++)
-	{
-		if (*(pgdir + i) & PTE_V)
+	Pte *pte = (Pte *)KADDR(PTE_ADDR(*(pgdir + PDX(va)))) + PTX(va);
+	u_long pa = page2pa(swap_alloc(pgdir, asid));
+	u_long da = *pte >> 12 << 12;
+	memcpy(KADDR(pa), da, BY2PG);
+	for (u_long i = 0; i <= 0x03FF; i++)
 		{
-			Pte *pt = (Pte *)KADDR(PTE_ADDR(*(pgdir + i)));
-			for (int j = 0; j < 1024; j++)
+			Pde *pgdir_entryp = pgdir + i;
+			if (pgdir_entryp && (*pgdir_entryp & PTE_V))
 			{
-				if ((*(pt + j) & PTE_SWP) && PPN(da) == PPN(*(pt + j)))
+				for (u_long j = 0; j <= 0x03FF; j++)
 				{
-					*(pt + j) &= (~PTE_SWP);
-					*(pt + j) |= PTE_V;
-					*(pt + j) = ((*(pt + j)) & 0xFFF) | swap_pa;
-					u_long tva = ((u_long)i << PDSHIFT) | ((u_long)j << PGSHIFT);
-					tlb_invalidate(asid, tva);
+					Pte *pte = (Pte *)KADDR(PTE_ADDR(*pgdir_entryp)) + j;
+					if (pte && (*pte & PTE_SWP))
+					{
+						if (da == (((*pte) >> 12) << 12))
+						{
+							tlb_invalidate(asid, pte);
+							*pte |= PTE_V;
+							*pte &= ~PTE_SWP;
+							*pte &= (1 << 12) - 1;
+							*pte |= (u_long)pa;
+						}
+					}
 				}
 			}
 		}
-	}
 	disk_free(da);
 }
 
