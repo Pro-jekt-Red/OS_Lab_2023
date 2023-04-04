@@ -637,27 +637,27 @@ static void swap(Pde *pgdir, u_int asid, u_long va)
 	u_long da = *pte >> 12 << 12;
 	memcpy(KADDR(pa), da, BY2PG);
 	for (u_long i = 0; i <= 0x03FF; i++)
+	{
+		Pde *pgdir_entryp = pgdir + i;
+		if (pgdir_entryp && (*pgdir_entryp & PTE_V))
 		{
-			Pde *pgdir_entryp = pgdir + i;
-			if (pgdir_entryp && (*pgdir_entryp & PTE_V))
+			for (u_long j = 0; j <= 0x03FF; j++)
 			{
-				for (u_long j = 0; j <= 0x03FF; j++)
+				Pte *pte = (Pte *)KADDR(PTE_ADDR(*pgdir_entryp)) + j;
+				if (pte && (*pte & PTE_SWP))
 				{
-					Pte *pte = (Pte *)KADDR(PTE_ADDR(*pgdir_entryp)) + j;
-					if (pte && (*pte & PTE_SWP))
+					if (da == (((*pte) >> 12) << 12))
 					{
-						if (da == (((*pte) >> 12) << 12))
-						{
-							tlb_invalidate(asid, pte);
-							*pte |= PTE_V;
-							*pte &= ~PTE_SWP;
-							*pte &= (1 << 12) - 1;
-							*pte |= (u_long)pa;
-						}
+						tlb_invalidate(asid, pte);
+						*pte |= PTE_V;
+						*pte &= ~PTE_SWP;
+						*pte &= (1 << 12) - 1;
+						*pte |= (u_long)pa;
 					}
 				}
 			}
 		}
+	}
 	disk_free(da);
 }
 
