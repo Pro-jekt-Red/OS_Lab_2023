@@ -46,5 +46,6 @@ void schedule(int yield) {
         TAILQ_REMOVE(&env_sched_list, e, env_sched_link);
         count = e->env_pri;
     }
+    count--;
     env_run(e);
 }
