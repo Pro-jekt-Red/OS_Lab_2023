@@ -194,14 +194,14 @@ static int env_setup_vm(struct Env *e) {
     try(page_alloc(&p));
     /* Exercise 3.3: Your code here. */
     p->pp_ref++;
-    e->env_pgdir = page2kva(p);
+    e->env_pgdir = (Pde *)page2kva(p);
 
     /* Step 2: Copy the template page directory 'base_pgdir' to 'e->env_pgdir'. */
     /* Hint:
      *   As a result, the address space of all envs is identical in [UTOP, UVPT).
      *   See include/mmu.h for layout.
      */
-    memcpy(e->env_pgdir + PDX(UTOP), base_pgdir + PDX(UTOP), sizeof(Pde) * (PDX(UVPT) - PDX(UTOP)));
+    memcpy((void *)(e->env_pgdir + PDX(UTOP)), base_pgdir + PDX(UTOP), sizeof(Pde) * (PDX(UVPT) - PDX(UTOP)));
 
     /* Step 3: Map its own page table at 'UVPT' with readonly permission.
      * As a result, user programs can read its page table through 'UVPT' */
