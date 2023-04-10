@@ -20,23 +20,23 @@ static void __attribute__((noreturn)) cow_entry(struct Trapframe *tf) {
 	/* Step 1: Find the 'perm' in which the faulting address 'va' is mapped. */
 	/* Hint: Use 'vpt' and 'VPN' to find the page table entry. If the 'perm' doesn't have
 	 * 'PTE_COW', launch a 'user_panic'. */
-	/* Exercise 4.13: Your code here. (1/6) */
+	/* TODO Exercise 4.13: Your code here. (1/6) */
 
 	/* Step 2: Remove 'PTE_COW' from the 'perm', and add 'PTE_D' to it. */
-	/* Exercise 4.13: Your code here. (2/6) */
+	/* TODO Exercise 4.13: Your code here. (2/6) */
 
 	/* Step 3: Allocate a new page at 'UCOW'. */
-	/* Exercise 4.13: Your code here. (3/6) */
+	/* TODO Exercise 4.13: Your code here. (3/6) */
 
 	/* Step 4: Copy the content of the faulting page at 'va' to 'UCOW'. */
 	/* Hint: 'va' may not be aligned to a page! */
-	/* Exercise 4.13: Your code here. (4/6) */
+	/* TODO Exercise 4.13: Your code here. (4/6) */
 
 	// Step 5: Map the page at 'UCOW' to 'va' with the new 'perm'.
-	/* Exercise 4.13: Your code here. (5/6) */
+	/* TODO Exercise 4.13: Your code here. (5/6) */
 
 	// Step 6: Unmap the page at 'UCOW'.
-	/* Exercise 4.13: Your code here. (6/6) */
+	/* TODO Exercise 4.13: Your code here. (6/6) */
 
 	// Step 7: Return to the faulting routine.
 	int r = syscall_set_trapframe(0, tf);
@@ -114,7 +114,7 @@ int fork(void) {
 
 	/* Step 3: Map all mapped pages below 'USTACKTOP' into the child's address space. */
 	// Hint: You should use 'duppage'.
-	/* Exercise 4.15: Your code here. (1/2) */
+	/* TODO Exercise 4.15: Your code here. (1/2) */
 
 	/* Step 4: Set up the child's tlb mod handler and set child's 'env_status' to
 	 * 'ENV_RUNNABLE'. */
@@ -122,7 +122,7 @@ int fork(void) {
 	 *   You may use 'syscall_set_tlb_mod_entry' and 'syscall_set_env_status'
 	 *   Child's TLB Mod user exception entry should handle COW, so set it to 'cow_entry'
 	 */
-	/* Exercise 4.15: Your code here. (2/2) */
+	/* TODO Exercise 4.15: Your code here. (2/2) */
 
 	return child;
 }
