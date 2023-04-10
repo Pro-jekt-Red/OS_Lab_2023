@@ -201,8 +201,7 @@ int sys_mem_map(u_int srcid, u_int srcva, u_int dstid, u_int dstva, u_int perm) 
     /* Step 4: Find the physical page mapped at 'srcva' in the address space of 'srcid'. */
     /* Return -E_INVAL if 'srcva' is not mapped. */
     /* Exercise 4.5: Your code here. (4/4) */
-    pp = page_lookup(srcenv->env_pgdir, srcva, NULL);
-    if (pp == NULL) {
+    if ((pp = page_lookup(srcenv->env_pgdir, srcva, NULL)) == NULL) {
         return -E_INVAL;
     }
 
@@ -265,7 +264,7 @@ int sys_exofork(void) {
 
     /* Step 2: Copy the current Trapframe below 'KSTACKTOP' to the new env's 'env_tf'. */
     /* Exercise 4.9: Your code here. (2/4) */
-    e->env_tf = *(struct Trapframe *)(KSTACKTOP - sizeof(struct Trapframe));
+    e->env_tf = *((struct Trapframe *)KSTACKTOP - 1);
 
     /* Step 3: Set the new env's 'env_tf.regs[2]' to 0 to indicate the return value in child. */
     /* Exercise 4.9: Your code here. (3/4) */
@@ -371,7 +370,7 @@ int sys_ipc_recv(u_int dstva) {
      * 'env_sched_list'. */
     /* Exercise 4.8: Your code here. (3/8) */
     curenv->env_status = ENV_NOT_RUNNABLE;
-    sched_remove(curenv);
+    TAILQ_REMOVE(&env_sched_list, curenv, env_sched_link);
 
     /* Step 5: Give up the CPU and block until a message is received. */
     ((struct Trapframe *)KSTACKTOP - 1)->regs[2] = 0;
@@ -408,9 +407,8 @@ int sys_ipc_try_send(u_int envid, u_int value, u_int srcva, u_int perm) {
     /* This is the only syscall where the 'envid2env' should be used with 'checkperm' UNSET,
      * because the target env is not restricted to 'curenv''s children. */
     /* Exercise 4.8: Your code here. (5/8) */
-    int ret = envid2env(envid, &e, 0);
-    if (ret < 0) {
-        return ret;
+    if (envid2env(envid, &e, 0) < 0) {
+        return -E_BAD_ENV;
     }
 
     /* Step 3: Check if the target is waiting for a message. */
@@ -429,14 +427,16 @@ int sys_ipc_try_send(u_int envid, u_int value, u_int srcva, u_int perm) {
      * 'env_sched_list'. */
     /* Exercise 4.8: Your code here. (7/8) */
     e->env_status = ENV_RUNNABLE;
+    TAILQ_INSERT_TAIL(&env_sched_list, e, env_sched_link);
 
     /* Step 6: If 'srcva' is not zero, map the page at 'srcva' in 'curenv' to 'e->env_ipc_dstva'
      * in 'e'. */
     /* Return -E_INVAL if 'srcva' is not zero and not mapped in 'curenv'. */
     if (srcva != 0) {
         /* Exercise 4.8: Your code here. (8/8) */
-        if (page_lookup(curenv->env_pgdir, (void *)srcva, NULL) == NULL) {
-            return -E_INVAL;
+        int r = sys_mem_map(0, srcva, e->env_id, e->env_ipc_dstva, perm);
+        if (r < 0) {
+            return r;
         }
     }
     return 0;
@@ -540,7 +540,7 @@ void do_syscall(struct Trapframe *tf) {
 
     /* Step 1: Add the EPC in 'tf' by a word (size of an instruction). */
     /* Exercise 4.2: Your code here. (1/4) */
-    tf->cp0_epc += 4;
+    tf->cp0_epc += sizeof(u_int);
 
     /* Step 2: Use 'sysno' to get 'func' from 'syscall_table'. */
     /* Exercise 4.2: Your code here. (2/4) */
