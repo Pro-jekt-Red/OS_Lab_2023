@@ -6,6 +6,8 @@
 #include <sched.h>
 #include <syscall.h>
 
+#include <debug.h>
+
 extern struct Env *curenv;
 
 /* Overview:
@@ -353,6 +355,7 @@ void sys_panic(char *msg) {
  *   Return -E_INVAL: 'dstva' is neither 0 nor a legal address.
  */
 int sys_ipc_recv(u_int dstva) {
+    // printk("sys_ipc_recv\n");
     /* Step 1: Check if 'dstva' is either zero or a legal address. */
     if (dstva != 0 && is_illegal_va(dstva)) {
         return -E_INVAL;
@@ -371,6 +374,8 @@ int sys_ipc_recv(u_int dstva) {
     /* Exercise 4.8: Your code here. (3/8) */
     curenv->env_status = ENV_NOT_RUNNABLE;
     TAILQ_REMOVE(&env_sched_list, curenv, env_sched_link);
+    // TAILQ_DEBUG(RECV_REMOVE, curenv, temp_elm, &env_sched_list, env_sched_link);
+    printk("\n");
 
     /* Step 5: Give up the CPU and block until a message is received. */
     ((struct Trapframe *)KSTACKTOP - 1)->regs[2] = 0;
@@ -394,6 +399,8 @@ int sys_ipc_recv(u_int dstva) {
  *   Return the original error when underlying calls fail.
  */
 int sys_ipc_try_send(u_int envid, u_int value, u_int srcva, u_int perm) {
+    // printk("sys_ipc_try_send\n");
+
     struct Env *e;
     struct Page *p;
 
@@ -428,16 +435,18 @@ int sys_ipc_try_send(u_int envid, u_int value, u_int srcva, u_int perm) {
     /* Exercise 4.8: Your code here. (7/8) */
     e->env_status = ENV_RUNNABLE;
     TAILQ_INSERT_TAIL(&env_sched_list, e, env_sched_link);
+    // TAILQ_DEBUG(SEND_INSERT, e, temp_elm, &env_sched_list, env_sched_link);
 
     /* Step 6: If 'srcva' is not zero, map the page at 'srcva' in 'curenv' to 'e->env_ipc_dstva'
      * in 'e'. */
     /* Return -E_INVAL if 'srcva' is not zero and not mapped in 'curenv'. */
     if (srcva != 0) {
         /* Exercise 4.8: Your code here. (8/8) */
-        int r = sys_mem_map(0, srcva, e->env_id, e->env_ipc_dstva, perm);
-        if (r < 0) {
-            return r;
+        p = page_lookup(curenv->env_pgdir, srcva, NULL);
+        if (p == NULL) {
+            return -E_INVAL;
         }
+        return page_insert(e->env_pgdir, e->env_asid, p, e->env_ipc_dstva, perm);
     }
     return 0;
 }
