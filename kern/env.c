@@ -304,7 +304,6 @@ static int load_icode_mapper(void *data, u_long va, size_t offset, u_int perm, c
     struct Env *env = (struct Env *)data;
     struct Page *p;
     int r;
-
     /* Step 1: Allocate a page with 'page_alloc'. */
     /* Exercise 3.5: Your code here. (1/2) */
     if ((r = page_alloc(&p)) < 0) {
