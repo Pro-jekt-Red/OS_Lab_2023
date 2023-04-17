@@ -34,17 +34,19 @@ void do_ov(struct Trapframe *tf) {
 	// 你需要在此处实现问题描述的处理要求
     curenv->env_ov_cnt++;
     u_long pa = va2pa(curenv->env_pgdir, tf->cp0_epc);
-	u_int *kva = KADDR((u_int *)pa);
-    if ((*kva >> 26) == 8) { // addi
+    u_int *kva = KADDR(pa);
+    u_int *EPC = tf->cp0_epc;
+    printk("*kva = %d, *EPC = %d\n", *(u_int *)KADDR(pa), *EPC);
+    if ((*EPC >> 26) == 8) { // addi
         tf->regs[(*kva >> 16) & 31] = tf->regs[(*kva >> 21) & 31] / 2 + (*kva >> 1 & ((1 << 15) - 1));
         tf->cp0_epc += 4;
     }
-    else if ((*kva & ((1 << 11) - 1)) == 32) { // add
-        *kva++;
+    else if ((*EPC & ((1 << 11) - 1)) == 32) { // add
+        *kva += 1;
         printk("add ov handled\n");
     }
-    else if ((*kva & ((1 << 11) - 1)) == 34) { // sub
-        *kva++;
+    else if ((*EPC & ((1 << 11) - 1)) == 34) { // sub
+        *kva += 1;
         printk("sub ov handled\n");
     }
 }
