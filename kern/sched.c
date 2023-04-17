@@ -48,7 +48,7 @@ void schedule(int yield) {
             panic("No runnable envs");
         }
         struct Env *temp_elm;
-        TAILQ_FOREACH(temp_elm, head, field) {
+        TAILQ_FOREACH(temp_elm, &env_sched_list, env_sched_link) {
             if (user_time[e->env_user] > user_time[temp_elm->env_user])
                 e = temp_elm;
         }
