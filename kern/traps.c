@@ -32,6 +32,7 @@ void do_reserved(struct Trapframe *tf) {
 
 void do_ov(struct Trapframe *tf) {
 	// 你需要在此处实现问题描述的处理要求
+    curenv->env_ov_cnt++;
     u_long pa = va2pa(curenv->env_pgdir, tf->cp0_epc);
 	u_int *kva = KADDR((u_int *)pa);
     if ((*kva >> 26) == 8) { // addi
@@ -39,9 +40,11 @@ void do_ov(struct Trapframe *tf) {
         tf->cp0_epc += 4;
     }
     else if ((*kva & ((1 << 11) - 1)) == 32) { // add
+        *kva++;
         printk("add ov handled\n");
     }
     else if ((*kva & ((1 << 11) - 1)) == 34) { // sub
+        *kva++;
         printk("sub ov handled\n");
     }
 }
