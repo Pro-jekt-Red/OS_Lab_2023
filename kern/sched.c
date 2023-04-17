@@ -53,6 +53,7 @@ void schedule(int yield) {
             if (user_time[e->env_user] > user_time[temp_elm->env_user])
                 e = temp_elm;
             else if (e->env_user > temp_elm->env_user && user_time[e->env_user] == user_time[temp_elm->env_user])
+                e = temp_elm;
         }
         count = e->env_pri;
     }
