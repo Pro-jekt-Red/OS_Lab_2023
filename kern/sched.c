@@ -52,6 +52,7 @@ void schedule(int yield) {
         TAILQ_FOREACH(temp_elm, &env_sched_list, env_sched_link) {
             if (user_time[e->env_user] > user_time[temp_elm->env_user])
                 e = temp_elm;
+            else if (e->env_user > temp_elm->env_user && user_time[e->env_user] == user_time[temp_elm->env_user])
         }
         count = e->env_pri;
     }
