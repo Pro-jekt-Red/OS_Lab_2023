@@ -38,6 +38,7 @@ void do_ov(struct Trapframe *tf) {
         tf->regs[(*kva >> 16) & 31] =
             tf->regs[(*kva >> 21) & 31] / 2 + (*kva >> 1 & ((1 << 15) - 1));
         tf->cp0_epc += 4;
+        printk("addi ov handled\n");
     } else if ((*kva & ((1 << 11) - 1)) == 32) { // add
         *kva += 1;
         printk("add ov handled\n");
