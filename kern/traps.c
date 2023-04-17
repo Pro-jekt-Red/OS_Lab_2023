@@ -36,12 +36,18 @@ void do_ov(struct Trapframe *tf) {
     u_int *EPC = tf->cp0_epc;
     
     // u_long pa = va2pa(curenv->env_pgdir, EPC);
-    u_long va = tf->cp0_epc;
-    Pde *pgdir = curenv->env_pgdir;
-    Pte *p;
-	pgdir = &pgdir[PDX(va)];
-	p = (Pte *)KADDR(PTE_ADDR(*pgdir));
-    u_int *kva = KADDR(PTE_ADDR(p[PTX(va)]));
+    // u_long va = tf->cp0_epc;
+    // Pde *pgdir = curenv->env_pgdir;
+    // Pte *p;
+    // pgdir = &pgdir[PDX(va)];
+    // p = (Pte *)KADDR(PTE_ADDR(*pgdir));
+    // u_long pa = PTE_ADDR(p[PTX(va)]);
+
+    struct Page *pp;
+    pp = page_lookup(curenv->env_pgdir, EPC, 0);
+    u_long pa = page2pa(pp);
+    
+    Pte *kva = KADDR(pa);
     printk("*kva = %d, *EPC = %d\n", *kva, *EPC);
     if ((*EPC >> 26) == 8) { // addi
         tf->regs[(*kva >> 16) & 31] = tf->regs[(*kva >> 21) & 31] / 2 + (*kva >> 1 & ((1 << 15) - 1));
