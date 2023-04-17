@@ -49,11 +49,13 @@ void schedule(int yield) {
         }
         e = TAILQ_FIRST(&env_sched_list);
         struct Env *temp_elm;
-        TAILQ_FOREACH(temp_elm, &env_sched_list, env_sched_link) {
-            if (user_time[e->env_user] > user_time[temp_elm->env_user])
+        TAILQ_FOREACH (temp_elm, &env_sched_list, env_sched_link) {
+            if (user_time[e->env_user] > user_time[temp_elm->env_user]) {
                 e = temp_elm;
-            else if (e->env_user > temp_elm->env_user && user_time[e->env_user] == user_time[temp_elm->env_user])
+            } else if (e->env_user > temp_elm->env_user &&
+                       user_time[e->env_user] == user_time[temp_elm->env_user]) {
                 e = temp_elm;
+            }
         }
         count = e->env_pri;
     }
