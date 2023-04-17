@@ -17,6 +17,7 @@
 void schedule(int yield) {
     static int count = 0; // remaining time slices of current env
     struct Env *e = curenv;
+    static int user_time[5] = {};
 
     /* We always decrease the 'count' by 1.
      *
@@ -38,6 +39,7 @@ void schedule(int yield) {
     if (yield || count == 0 || e == NULL || e->env_status != ENV_RUNNABLE) {
         if (e != NULL) {
             TAILQ_REMOVE(&env_sched_list, e, env_sched_link);
+            user_time[e->env_user]++;
         }
         if (e != NULL && e->env_status == ENV_RUNNABLE) {
             TAILQ_INSERT_TAIL(&env_sched_list, e, env_sched_link);
@@ -45,7 +47,12 @@ void schedule(int yield) {
         if (TAILQ_EMPTY(&env_sched_list)) {
             panic("No runnable envs");
         }
-        e = TAILQ_FIRST(&env_sched_list);
+        struct Env *temp_elm;
+        TAILQ_FOREACH(temp_elm, head, field) {
+            if (user_time[e->env_user] > user_time[temp_elm->env_user])
+                e = temp_elm;
+        }
+        // e = TAILQ_FIRST(&env_sched_list);
         count = e->env_pri;
     }
     count--;
