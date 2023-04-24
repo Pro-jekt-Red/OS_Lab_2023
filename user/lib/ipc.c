@@ -39,18 +39,30 @@ u_int ipc_recv(u_int *whom, void *dstva, u_int *perm) {
 }
 
 
-void ipc_dfs_send(struct Env *e, u_int val, void * srcva, u_int perm) {
-	ipc_send(e->env_id, val, srcva, perm);
-	if (e->env_son != NULL) {
-		ipc_dfs_send(e->env_son, val, srcva, perm);
-	}
-	if (e->env_bro != NULL) {
-		ipc_dfs_send(e->env_bro, val, srcva, perm);
-	}
-}
+// void ipc_dfs_send(struct Env *e, u_int val, void * srcva, u_int perm) {
+// 	ipc_send(e->env_id, val, srcva, perm);
+// 	if (e->env_son != NULL) {
+// 		ipc_dfs_send(e->env_son, val, srcva, perm);
+// 	}
+// 	if (e->env_bro != NULL) {
+// 		ipc_dfs_send(e->env_bro, val, srcva, perm);
+// 	}
+// }
+
 void ipc_broadcast(u_int val, void * srcva, u_int perm) {
 	struct Env *curenv = envs + ENVX(syscall_getenvid());
-    if (curenv->env_son != NULL) {
-		ipc_dfs_send(curenv->env_son, val, srcva, perm);
-	}
+    struct Env *e;
+	struct Env_sched_list env_sched_list = syscall_getenvs();
+    TAILQ_FOREACH(e, &env_sched_list, env_sched_link) {
+        struct Env *tmp = e;
+        u_int fa = 0;
+        while (tmp->env_parent_id) {
+            fa = tmp->env_parent_id;
+            if (fa == curenv->env_id){
+                ipc_send(e->env_id, val, srcva, perm);
+                break;
+            }
+            tmp = envs + ENVX(fa);
+        }
+    }
 }

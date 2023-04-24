@@ -21,6 +21,10 @@ void sys_putchar(int c) {
     return;
 }
 
+struct Env_sched_list sys_getenvs() {
+    return env_sched_list;
+}
+
 /* Overview:
  * 	This function is used to print a string of bytes on screen.
  *
@@ -526,6 +530,7 @@ void *syscall_table[MAX_SYSNO] = {
     [SYS_ipc_recv] = sys_ipc_recv,
     [SYS_cgetc] = sys_cgetc,
     [SYS_write_dev] = sys_write_dev,
+    [SYS_getenvs] = sys_getenvs,
     [SYS_read_dev] = sys_read_dev,
 };
 
