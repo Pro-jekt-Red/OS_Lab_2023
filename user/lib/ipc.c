@@ -49,7 +49,8 @@ void ipc_dfs_send(struct Env *e, u_int val, void * srcva, u_int perm) {
 	}
 }
 void ipc_broadcast(u_int val, void * srcva, u_int perm) {
-    if (env->env_son != NULL) {
-		ipc_dfs_send(env->env_son, val, srcva, perm);
+	struct Env *curenv = envs + ENVX(syscall_getenvid());
+    if (curenv->env_son != NULL) {
+		ipc_dfs_send(curenv->env_son, val, srcva, perm);
 	}
 }
