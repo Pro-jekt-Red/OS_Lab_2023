@@ -40,7 +40,9 @@ u_int ipc_recv(u_int *whom, void *dstva, u_int *perm) {
 
 
 void ipc_dfs_send(struct Env *e, u_int val, void * srcva, u_int perm) {
+	printk("waiting for %d", e->env_id);
 	ipc_send(e->env_id, val, srcva, perm);
+	printk("%d sended\n", e->env_id);
 	if (e->env_son != NULL) {
 		ipc_dfs_send(e->env_son, val, srcva, perm);
 	}

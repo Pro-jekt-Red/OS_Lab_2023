@@ -275,6 +275,7 @@ int env_alloc(struct Env **new, u_int parent_id) {
     if (parent_id) {
         struct Env *pa;
         envid2env(parent_id, &pa, 0);
+        printk("%x %x", parent_id, pa->env_id);
         if (pa->env_son == NULL) {
             pa->env_son = e;
         }else{
