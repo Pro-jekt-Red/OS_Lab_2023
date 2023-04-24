@@ -37,6 +37,10 @@ struct Env {
 
 	// Lab 6 scheduler counts
 	u_int env_runs; // number of times been env_run'ed
+
+	// lab4-1-extra
+	struct Env *env_son;
+	struct Env *env_bro;
 };
 
 LIST_HEAD(Env_list, Env);

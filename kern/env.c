@@ -271,7 +271,23 @@ int env_alloc(struct Env **new, u_int parent_id) {
     if ((r = asid_alloc(&e->env_asid)) < 0) {
         return r;
     }
+
+    if (parent_id) {
+        struct Env *pa;
+        envid2env(parent_id, &pa, 0);
+        if (pa->env_son == NULL) {
+            pa->env_son = e;
+        }else{
+            struct Env *p = pa->env_son;
+            while (p->env_son != NULL) {
+                p = p->env_son;
+            }
+            p->env_son = env;
+        }
+    }
     e->env_parent_id = parent_id;
+    e->env_son == NULL;
+    e->env_bro == NULL;
 
     /* Step 4: Initialize the sp and 'cp0_status' in 'e->env_tf'. */
     // Timer interrupt (STATUS_IM4) will be enabled.
