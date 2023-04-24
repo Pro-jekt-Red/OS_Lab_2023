@@ -81,7 +81,7 @@ void syscall_set_gid(u_int gid) {
 }
 
 int syscall_ipc_try_group_send(u_int whom, u_int val, const void *srcva, u_int perm) {
-	return msyscall(SYS_ipc_group_send, envid, value, srcva, perm);
+	return msyscall(SYS_ipc_group_send, whom, val, srcva, perm);
 }
 
 

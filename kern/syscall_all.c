@@ -514,7 +514,7 @@ void sys_set_gid(u_int gid) {
     curenv->env_gid = gid;
 }
 
-int sys_ipc_group_send(u_int envid, u_int val, const void *srcva, u_int perm) {
+int sys_ipc_group_send(u_int envid, u_int value, const void *srcva, u_int perm) {
     struct Env *e;
     struct Page *p;
 
