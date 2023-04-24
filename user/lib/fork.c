@@ -20,23 +20,30 @@ static void __attribute__((noreturn)) cow_entry(struct Trapframe *tf) {
 	/* Step 1: Find the 'perm' in which the faulting address 'va' is mapped. */
 	/* Hint: Use 'vpt' and 'VPN' to find the page table entry. If the 'perm' doesn't have
 	 * 'PTE_COW', launch a 'user_panic'. */
-	/* TODO Exercise 4.13: Your code here. (1/6) */
+	/* Exercise 4.13: Your code here. (1/6) */
+	perm = vpt[VPN(va)] & 0xfff;
+	panic_on(!(perm & PTE_COW));
 
 	/* Step 2: Remove 'PTE_COW' from the 'perm', and add 'PTE_D' to it. */
-	/* TODO Exercise 4.13: Your code here. (2/6) */
+	/* Exercise 4.13: Your code here. (2/6) */
+	perm = (perm & ~PTE_COW) | PTE_D;
 
 	/* Step 3: Allocate a new page at 'UCOW'. */
-	/* TODO Exercise 4.13: Your code here. (3/6) */
+	/* Exercise 4.13: Your code here. (3/6) */
+	page_alloc(UCOW);
 
 	/* Step 4: Copy the content of the faulting page at 'va' to 'UCOW'. */
 	/* Hint: 'va' may not be aligned to a page! */
-	/* TODO Exercise 4.13: Your code here. (4/6) */
+	/* Exercise 4.13: Your code here. (4/6) */
+	memcpy(UCOW, (void *)ROUNDDOWN(va, BY2PG), BY2PG);
 
 	// Step 5: Map the page at 'UCOW' to 'va' with the new 'perm'.
-	/* TODO Exercise 4.13: Your code here. (5/6) */
+	/* Exercise 4.13: Your code here. (5/6) */
+	syscall_mem_map(0, UCOW, 0, ROUNDDOWN(va, BY2PG), perm);
 
 	// Step 6: Unmap the page at 'UCOW'.
-	/* TODO Exercise 4.13: Your code here. (6/6) */
+	/* Exercise 4.13: Your code here. (6/6) */
+	syscall_mem_unmap(0, UCOW);
 
 	// Step 7: Return to the faulting routine.
 	int r = syscall_set_trapframe(0, tf);
@@ -80,6 +87,13 @@ static void duppage(u_int envid, u_int vpn) {
 	/* Hint: The page should be first mapped to the child before remapped in the parent. (Why?)
 	 */
 	/* Exercise 4.10: Your code here. (2/2) */
+	if ((perm & PTE_D) && !(perm & PTE_LIBRARY) && !(perm & PTE_COW)) {
+		perm = (perm & ~PTE_D) | PTE_COW;
+		try(syscall_mem_map(0, vpn * BY2PG, envid, vpn * BY2PG, perm));
+		try(syscall_mem_map(0, vpn * BY2PG, 0, vpn * BY2PG, perm));
+	} else {
+		try(syscall_mem_map(0, vpn * BY2PG, envid, vpn * BY2PG, perm));
+	}
 
 }
 

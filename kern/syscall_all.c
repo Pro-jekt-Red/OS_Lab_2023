@@ -97,10 +97,12 @@ int sys_set_tlb_mod_entry(u_int envid, u_int func) {
     struct Env *env;
 
     /* Step 1: Convert the envid to its corresponding 'struct Env *' using 'envid2env'. */
-    /* TODO Exercise 4.12: Your code here. (1/2) */
+    /* Exercise 4.12: Your code here. (1/2) */
+    try(envid2env(envid, &env, 1));
 
     /* Step 2: Set its 'env_user_tlb_mod_entry' to 'func'. */
-    /* TODO Exercise 4.12: Your code here. (2/2) */
+    /* Exercise 4.12: Your code here. (2/2) */
+    env->env_user_tlb_mod_entry = func;
 
     return 0;
 }
@@ -296,13 +298,24 @@ int sys_set_env_status(u_int envid, u_int status) {
     struct Env *env;
 
     /* Step 1: Check if 'status' is valid. */
-    /* TODO Exercise 4.14: Your code here. (1/3) */
+    /* Exercise 4.14: Your code here. (1/3) */
+    if (status != ENV_RUNNABLE && status != ENV_NOT_RUNNABLE) {
+        return -E_INVAL;
+    }
 
     /* Step 2: Convert the envid to its corresponding 'struct Env *' using 'envid2env'. */
-    /* TODO Exercise 4.14: Your code here. (2/3) */
+    /* Exercise 4.14: Your code here. (2/3) */
+    try(envid2env(envid, &env, 1));
 
     /* Step 4: Update 'env_sched_list' if the 'env_status' of 'env' is being changed. */
-    /* TODO Exercise 4.14: Your code here. (3/3) */
+    /* Exercise 4.14: Your code here. (3/3) */
+    if (env->env_status != status) {
+        if (status == ENV_RUNNABLE) {
+            TAILQ_INSERT_TAIL(&env_sched_list, env, env_sched_link);
+        } else {
+            TAILQ_REMOVE(&env_sched_list, env, env_sched_link);
+        }
+    }
 
     /* Step 5: Set the 'env_status' of 'env'. */
     env->env_status = status;
