@@ -14,7 +14,7 @@
 #define pages ((volatile struct Page *)UPAGES)
 
 
-struct Env_sched_list syscall_getenvs();
+void syscall_getenvs(struct Env_sched_list);
 // libos
 void exit(void) __attribute__((noreturn));
 
