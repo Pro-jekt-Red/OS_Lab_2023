@@ -279,10 +279,10 @@ int env_alloc(struct Env **new, u_int parent_id) {
             pa->env_son = e;
         }else{
             struct Env *p = pa->env_son;
-            while (p->env_son != NULL) {
-                p = p->env_son;
+            while (p->env_bro != NULL) {
+                p = p->env_bro;
             }
-            p->env_son = env;
+            p->env_bro = e;
         }
     }
     e->env_parent_id = parent_id;
