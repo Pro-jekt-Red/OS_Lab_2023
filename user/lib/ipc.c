@@ -55,6 +55,7 @@ void ipc_broadcast(u_int val, void * srcva, u_int perm) {
 	struct Env_sched_list *list;
 	syscall_getenvs(&list);
     TAILQ_FOREACH(e, list, env_sched_link) {
+		debugf("%x\n", e->env_id);
         struct Env *tmp = e;
         u_int fa = 0;
         while (tmp->env_parent_id) {
