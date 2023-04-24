@@ -508,6 +508,51 @@ int sys_read_dev(u_int va, u_int pa, u_int len) {
     return 0;
 }
 
+
+// lab4-1-exam
+void sys_set_gid(u_int gid) {
+    curenv->env_gid = gid;
+}
+
+int sys_ipc_group_send(u_int envid, u_int val, const void *srcva, u_int perm) {
+    struct Env *e;
+    struct Page *p;
+
+    if (srcva != 0 && is_illegal_va(srcva)) {
+        return -E_INVAL;
+    }
+
+    if (envid2env(envid, &e, 0) < 0) {
+        return -E_BAD_ENV;
+    }
+
+    if (e->env_ipc_recving == 0) {
+        return -E_IPC_NOT_RECV;
+    }
+
+    if (e->env_gid != curenv->env_gid) {
+        return -E_IPC_NOT_GROUP;
+    }
+
+    e->env_ipc_value = value;
+    e->env_ipc_from = curenv->env_id;
+    e->env_ipc_perm = PTE_V | perm;
+    e->env_ipc_recving = 0;
+
+    e->env_status = ENV_RUNNABLE;
+    TAILQ_INSERT_TAIL(&env_sched_list, e, env_sched_link);
+
+    if (srcva != 0) {
+        p = page_lookup(curenv->env_pgdir, srcva, NULL);
+        if (p == NULL) {
+            return -E_INVAL;
+        }
+        try(page_insert(e->env_pgdir, e->env_asid, p, e->env_ipc_dstva, perm));
+    }
+    return 0;
+
+}
+
 void *syscall_table[MAX_SYSNO] = {
     [SYS_putchar] = sys_putchar,
     [SYS_print_cons] = sys_print_cons,
@@ -527,6 +572,8 @@ void *syscall_table[MAX_SYSNO] = {
     [SYS_cgetc] = sys_cgetc,
     [SYS_write_dev] = sys_write_dev,
     [SYS_read_dev] = sys_read_dev,
+    [SYS_set_gid] = sys_set_gid,
+    [SYS_ipc_group_send] = sys_ipc_group_send,
 };
 
 /* Overview:
