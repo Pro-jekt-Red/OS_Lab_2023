@@ -38,6 +38,10 @@ u_int ipc_recv(u_int *whom, void *dstva, u_int *perm) {
 	return env->env_ipc_value;
 }
 
+extern struct Env *curenv;		     // the current env
+extern struct Env_sched_list env_sched_list; // runnable env list
+extern int envid2env(u_int envid, struct Env **penv, int checkperm);
+
 void ipc_broadcast(u_int val, void * srcva, u_int perm) {
     struct Env *e;
     TAILQ_FOREACH(e, &env_sched_list, env_sched_link) {
