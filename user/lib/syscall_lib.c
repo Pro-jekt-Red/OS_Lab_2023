@@ -4,8 +4,8 @@
 #include <syscall.h>
 #include <trap.h>
 
-struct Env_sched_list syscall_getenvs(){
-	return msyscall(SYS_getenvs);
+void syscall_getenvs(Env_sched_list *list){
+	msyscall(SYS_getenvs, list);
 }
 
 void syscall_putchar(int ch) {
