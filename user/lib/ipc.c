@@ -52,9 +52,11 @@ u_int ipc_recv(u_int *whom, void *dstva, u_int *perm) {
 void ipc_broadcast(u_int val, void * srcva, u_int perm) {
 	struct Env *curenv = envs + ENVX(syscall_getenvid());
     struct Env *e;
-	struct Env_sched_list *list;
-	syscall_getenvs(&list);
-    TAILQ_FOREACH(e, list, env_sched_link) {
+	// struct Env_sched_list *list;
+	// syscall_getenvs(&list);
+    // TAILQ_FOREACH(e, list, env_sched_link) {
+	for(int i = 0; i < NENV; i++) {
+		e = envs + i;
 		debugf("%x\n", e->env_id);
         struct Env *tmp = e;
         u_int fa = 0;
