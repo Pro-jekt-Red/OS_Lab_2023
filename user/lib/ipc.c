@@ -58,7 +58,7 @@ void ipc_broadcast(u_int val, void * srcva, u_int perm) {
         struct Env *tmp = e;
         u_int fa = 0;
         while (tmp->env_parent_id) {
-			debugf("now %x, fa %x\n", tmp->env_id, tmp->env_parent_id)
+			debugf("now %x, fa %x\n", tmp->env_id, tmp->env_parent_id);
             fa = tmp->env_parent_id;
             if (fa == curenv->env_id){
 				debugf("%x try send\n", e->env_id);
