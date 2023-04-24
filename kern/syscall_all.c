@@ -21,8 +21,8 @@ void sys_putchar(int c) {
     return;
 }
 
-void sys_getenvs(struct Env_sched_list *list) {
-    *list = env_sched_list;
+void sys_getenvs(struct Env_sched_list **list) {
+    *list = &env_sched_list;
 }
 
 /* Overview:
