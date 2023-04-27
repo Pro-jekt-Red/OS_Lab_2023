@@ -26,14 +26,21 @@
 //  'DEV_DISK_ADDRESS', 'DEV_DISK_ID', 'DEV_DISK_OFFSET', 'DEV_DISK_OPERATION_READ',
 //  'DEV_DISK_START_OPERATION', 'DEV_DISK_STATUS', 'DEV_DISK_BUFFER'
 void ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs) {
-	u_int begin = secno * BY2SECT;
-	u_int end = begin + nsecs * BY2SECT;
+    u_int begin = secno * BY2SECT;
+    u_int end = begin + nsecs * BY2SECT;
 
-	for (u_int off = 0; begin + off < end; off += BY2SECT) {
-		uint32_t temp = diskno;
-		/* Exercise 5.3: Your code here. (1/2) */
-
-	}
+    for (u_int off = 0; begin + off < end; off += BY2SECT) {
+        uint32_t temp = diskno;
+        /* Exercise 5.3: Your code here. (1/2) */
+        panic_on(syscall_write_dev(DEV_DISK_ADDRESS + DEV_DISK_ID, &temp, 4));
+        temp = begin + off;
+        panic_on(syscall_write_dev(DEV_DISK_ADDRESS + DEV_DISK_OFFSET, &temp, 4));
+        temp = DEV_DISK_OPERATION_READ;
+        panic_on(syscall_write_dev(DEV_DISK_ADDRESS + DEV_DISK_START_OPERATION, &temp, 4));
+        panic_on(syscall_read_dev(DEV_DISK_ADDRESS + DEV_DISK_STATUS, &temp, 4));
+        panic_on(!temp);
+        panic_on(syscall_read_dev(DEV_DISK_ADDRESS + DEV_DISK_BUFFER, dst + off, BY2SECT));
+    }
 }
 
 // Overview:
@@ -53,12 +60,19 @@ void ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs) {
 //  'DEV_DISK_ADDRESS', 'DEV_DISK_ID', 'DEV_DISK_OFFSET', 'DEV_DISK_BUFFER',
 //  'DEV_DISK_OPERATION_WRITE', 'DEV_DISK_START_OPERATION', 'DEV_DISK_STATUS'
 void ide_write(u_int diskno, u_int secno, void *src, u_int nsecs) {
-	u_int begin = secno * BY2SECT;
-	u_int end = begin + nsecs * BY2SECT;
+    u_int begin = secno * BY2SECT;
+    u_int end = begin + nsecs * BY2SECT;
 
-	for (u_int off = 0; begin + off < end; off += BY2SECT) {
-		uint32_t temp = diskno;
-		/* Exercise 5.3: Your code here. (2/2) */
-
-	}
+    for (u_int off = 0; begin + off < end; off += BY2SECT) {
+        uint32_t temp = diskno;
+        /* Exercise 5.3: Your code here. (2/2) */
+		panic_on(syscall_write_dev(DEV_DISK_ADDRESS + DEV_DISK_ID, &temp, 4));
+		temp = begin + off;
+		panic_on(syscall_write_dev(DEV_DISK_ADDRESS + DEV_DISK_OFFSET, &temp, 4));
+		panic_on(syscall_write_dev(DEV_DISK_ADDRESS + DEV_DISK_BUFFER, src + off, BY2SECT));
+		temp = DEV_DISK_OPERATION_WRITE;
+		panic_on(syscall_write_dev(DEV_DISK_ADDRESS + DEV_DISK_START_OPERATION, &temp, 4));
+		panic_on(syscall_read_dev(DEV_DISK_ADDRESS + DEV_DISK_STATUS, &temp, 4));
+		panic_on(!temp);
+    }
 }
