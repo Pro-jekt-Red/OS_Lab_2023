@@ -81,7 +81,7 @@ static void duppage(u_int envid, u_int vpn) {
     /* Hint: Use 'vpt' to find the page table entry. */
     /* Exercise 4.10: Your code here. (1/2) */
     addr = vpn * BY2PG;
-    perm = vpt[addr] & 0xFFF;
+    perm = vpt[vpn] & 0xFFF;
 
     /* Step 2: If the page is writable, and not shared with children, and not marked as COW yet,
      * then map it as copy-on-write, both in the parent (0) and the child (envid). */
@@ -90,10 +90,10 @@ static void duppage(u_int envid, u_int vpn) {
     /* Exercise 4.10: Your code here. (2/2) */
     if ((perm & PTE_D) && !(perm & PTE_LIBRARY) && !(perm & PTE_COW)) {
         perm = (perm & ~PTE_D) | PTE_COW;
-        syscall_mem_map(0, (void *)vpt[addr], envid, (void *)vpt[addr], perm);
-        syscall_mem_map(0, (void *)vpt[addr], 0, (void *)vpt[addr], perm);
+        syscall_mem_map(0, (void *)addr, envid, (void *)addr, perm);
+        syscall_mem_map(0, (void *)addr, 0, (void *)addr, perm);
     } else {
-        syscall_mem_map(0, (void *)vpt[addr], envid, (void *)vpt[addr], perm);
+        syscall_mem_map(0, (void *)addr, envid, (void *)addr, perm);
     }
 }
 
