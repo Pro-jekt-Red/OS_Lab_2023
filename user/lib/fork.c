@@ -131,11 +131,10 @@ int fork(void) {
     // Hint: You should use 'duppage'.
     /* Exercise 4.15: Your code here. (1/2) */
     for (i = 0; i < VPN(USTACKTOP); i++) {
-        if (!(vpd[i >> 10] & PTE_V)) {
-            i = ROUNDDOWN(i + (1 << 10), 1 << 10);
-            continue;
+        while (!(vpd[i >> 10] & PTE_V)) {
+            i = ROUND(i + 1, 1 << 10);
         }
-        if ((vpt[i] & PTE_V)) {    
+        if (vpt[i] & PTE_V) {    
             duppage(child, i);
         }
     }
