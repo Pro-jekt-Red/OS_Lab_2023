@@ -80,7 +80,7 @@ static void duppage(u_int envid, u_int vpn) {
     /* Step 1: Get the permission of the page. */
     /* Hint: Use 'vpt' to find the page table entry. */
     /* Exercise 4.10: Your code here. (1/2) */
-    addr = vpn * BY2PG;
+    addr = vpn << PGSHIFT;
     perm = vpt[vpn] & 0xFFF;
 
     /* Step 2: If the page is writable, and not shared with children, and not marked as COW yet,
@@ -130,8 +130,12 @@ int fork(void) {
     /* Step 3: Map all mapped pages below 'USTACKTOP' into the child's address space. */
     // Hint: You should use 'duppage'.
     /* Exercise 4.15: Your code here. (1/2) */
-    for (i = 0; i < USTACKTOP / BY2PG; i++) {
-        if ((vpt[i] & PTE_V) && (i != VPN(UXSTACKTOP - BY2PG))) {
+    for (i = 0; i < VPN(USTACKTOP); i++) {
+        if (!(vpd[i >> 10] & PTE_V)) {
+            i = ROUNDDOWN(i + (1 << 10), 1 << 10);
+            continue;
+        }
+        if ((vpt[i] & PTE_V)) {    
             duppage(child, i);
         }
     }
