@@ -80,6 +80,7 @@ static void duppage(u_int envid, u_int vpn) {
     /* Step 1: Get the permission of the page. */
     /* Hint: Use 'vpt' to find the page table entry. */
     /* Exercise 4.10: Your code here. (1/2) */
+    addr = vpn * BY2PG;
     perm = vpt[vpn] & 0xFFF;
 
     /* Step 2: If the page is writable, and not shared with children, and not marked as COW yet,
@@ -128,7 +129,12 @@ int fork(void) {
 
     /* Step 3: Map all mapped pages below 'USTACKTOP' into the child's address space. */
     // Hint: You should use 'duppage'.
-    /* TODO Exercise 4.15: Your code here. (1/2) */
+    /* Exercise 4.15: Your code here. (1/2) */
+    for (i = 0; i < USTACKTOP / BY2PG; i++) {
+        if ((vpt[i] & PTE_V) && (i != VPN(UXSTACKTOP - BY2PG))) {
+            duppage(child, i);
+        }
+    }
 
     /* Step 4: Set up the child's tlb mod handler and set child's 'env_status' to
      * 'ENV_RUNNABLE'. */
@@ -136,7 +142,9 @@ int fork(void) {
      *   You may use 'syscall_set_tlb_mod_entry' and 'syscall_set_env_status'
      *   Child's TLB Mod user exception entry should handle COW, so set it to 'cow_entry'
      */
-    /* TODO Exercise 4.15: Your code here. (2/2) */
+    /* Exercise 4.15: Your code here. (2/2) */
+    syscall_set_tlb_mod_entry(child, cow_entry);
+    syscall_set_env_status(child, ENV_RUNNABLE);
 
     return child;
 }
