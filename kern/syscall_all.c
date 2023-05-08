@@ -519,6 +519,9 @@ int sys_read_dev(u_int va, u_int pa, u_int len) {
 int id, val[30], root[30];
 char sem_name[30][40];
 int sys_sem_init(const char *name, int init_value, int checkperm){
+    if (id == 10) {
+        return -E_NO_SEM;
+    }
     strcpy(sem_name[id], name);
     val[id] = init_value;
     if (checkperm) {
