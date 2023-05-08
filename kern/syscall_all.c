@@ -516,6 +516,83 @@ int sys_read_dev(u_int va, u_int pa, u_int len) {
 
     return 0;
 }
+int id, val[20], root[20];
+char *sem_name[20];
+int sys_sem_init(const char *name, int init_value, int checkperm){
+    sem_name[id] = name;
+    val[id] = init_value;
+    if (checkperm) {
+        root = curenv->env_id;
+    }
+    return id++;
+}
+int sys_sem_wait(int sem_id) {
+    if (sem_id >= id) {
+        return -E_NO_SEM;
+    }
+    if (root[sem_id]) {
+        int id = curenv->env_id;
+        while (id && id != root[sem_id]) {
+            id = envs[ENVX(id)].env_parent_id;
+        }
+        if (!id) {
+            return -E_NO_SEM;
+        }
+    }
+    if (!val[sem_id]) {
+        return -114514;
+    }
+    val[sem_id]--;
+    return 0;
+}
+int sys_sem_post(int sem_id) {
+    if (sem_id >= id) {
+        return -E_NO_SEM;
+    }
+    if (root[sem_id]) {
+        int id = curenv->env_id;
+        while (id && id != root[sem_id]) {
+            id = envs[ENVX(id)].env_parent_id;
+        }
+        if (!id) {
+            return -E_NO_SEM;
+        }
+    }
+    val[sem_id]++;
+    return 0;
+}
+int sys_sem_getvalue(int sem_id){
+    if (sem_id >= id) {
+        return -E_NO_SEM;
+    }
+    if (root[sem_id]) {
+        int id = curenv->env_id;
+        while (id && id != root[sem_id]) {
+            id = envs[ENVX(id)].env_parent_id;
+        }
+        if (!id) {
+            return -E_NO_SEM;
+        }
+    }
+    return val[sem_id];
+}
+int sys_sem_getid(const char *name) {
+    int sem_id = 0;
+    for (; strcpy(sem_id) && sem_id < id; sem_id++);
+    if (sem_id >= id) {
+        return -E_NO_SEM;
+    }
+    if (root[sem_id]) {
+        int id = curenv->env_id;
+        while (id && id != root[sem_id]) {
+            id = envs[ENVX(id)].env_parent_id;
+        }
+        if (!id) {
+            return -E_NO_SEM;
+        }
+    }
+    return sem_id;
+}
 
 void *syscall_table[MAX_SYSNO] = {
     [SYS_putchar] = sys_putchar,
@@ -536,6 +613,11 @@ void *syscall_table[MAX_SYSNO] = {
     [SYS_cgetc] = sys_cgetc,
     [SYS_write_dev] = sys_write_dev,
     [SYS_read_dev] = sys_read_dev,
+    [SYS_sem_init] = sys_sem_init,
+    [SYS_sem_wait] = sys_sem_wait,
+    [SYS_sem_post] = sys_sem_post,
+    [SYS_sem_getvalue] = sys_sem_getvalue,
+    [SYS_sem_getid] = sys_sem_getid,
 };
 
 /* Overview:
