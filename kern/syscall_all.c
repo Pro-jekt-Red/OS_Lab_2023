@@ -521,7 +521,7 @@ int env_table[1<<20];
 void sys_barrier_set(int n) {
     ba = n;
 }
-void sys_barrier_try_wait() {
+int sys_barrier_try_wait() {
     if (!env_table[curenv->env_id]++){
         cnt++;
     }
