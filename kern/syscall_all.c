@@ -598,13 +598,9 @@ int sys_sem_getid(const char *name) {
         return -E_NO_SEM;
     }
     if (root[sem_id]) {
-        struct Env *tmp = curenv;
-        u_int fa = tmp->env_id;
-        while (tmp->env_parent_id && fa != root[sem_id]) {
-            fa = tmp->env_parent_id;
-            if(!envid2env(fa, &tmp, 0)) 
-                return -E_NO_SEM;
-        }
+        u_int fa = curenv->env_id;
+        while (fa && fa != root[sem_id])
+            fa = fathers[fa];
         if (fa != root[sem_id])
             return -E_NO_SEM;
     }
