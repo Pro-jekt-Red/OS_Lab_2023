@@ -42,7 +42,7 @@ int sem_init(const char *name, int init_value, int checkperm) {
 }
 int sem_wait(int sem_id) {
 	int r;
-	while ((r = sem_wait(sem_id)) == -114514) {
+	while ((r = syscall_sem_wait(sem_id)) == -114514) {
 		syscall_yield();
 	}
 	return r;
