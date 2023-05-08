@@ -14,22 +14,22 @@ int main() {
 		user_halt("OSTEST_FORK");
 	}
 	if (r == 0) {
-		sem_wait(lock_id);
-		os_assert(sem_getvalue(items_id) == 4, "WRONG_RETURN_VALUE_WAIT");
-		os_assert(sem_getvalue(lock_id) == 0, "WRONG_RETURN_VALUE_WAIT");
-		debugf("OSTEST_OK\n");
-		return 0;
-	} else {
-		os_assert(sem_getvalue(items_id) == 5, "WRONG_RETURN_VALUE");
-		os_assert(sem_getvalue(lock_id) == 0, "WRONG_RETURN_VALUE");
-
-		sem_wait(items_id);
-
-		os_assert(sem_getvalue(items_id) == 4, "WRONG_RETURN_VALUE_WAIT");
-		os_assert(sem_getvalue(lock_id) == 0, "WRONG_RETURN_VALUE_WAIT");
-
-		sem_post(lock_id);
-		debugf("OSTEST_OK\n");
-		return 0;
-	}
+        sem_wait(lock_id);
+        os_assert(sem_getvalue(items_id) == 4, "WRONG_RETURN_VALUE_WAIT");
+        os_assert(sem_getvalue(lock_id) == 0, "WRONG_RETURN_VALUE_WAIT");
+        debugf("%d\n", sem_getid("aaa"));
+        os_assert(sem_getid("aaa") == -14, "Exception");
+        debugf("OSTEST_OK\n");
+        return 0;
+    } else {
+        sem_init("aaa", 1, 1);
+        os_assert(sem_getvalue(items_id) == 5, "WRONG_RETURN_VALUE");
+        os_assert(sem_getvalue(lock_id) == 0, "WRONG_RETURN_VALUE");
+        sem_wait(items_id);
+        os_assert(sem_getvalue(items_id) == 4, "WRONG_RETURN_VALUE_WAIT");
+        os_assert(sem_getvalue(lock_id) == 0, "WRONG_RETURN_VALUE_WAIT");
+        sem_post(lock_id);
+        debugf("OSTEST_OK\n");
+        return 0;
+    }
 }
