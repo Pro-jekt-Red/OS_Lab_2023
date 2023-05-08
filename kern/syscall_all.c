@@ -516,13 +516,15 @@ int sys_read_dev(u_int va, u_int pa, u_int len) {
 
     return 0;
 }
-int id, val[20], root[20];
-const char *sem_name[20];
+int id, val[30], root[30];
+char sem_name[30][40];
 int sys_sem_init(const char *name, int init_value, int checkperm){
-    sem_name[id] = name;
+    strcpy(sem_name[id], name);
     val[id] = init_value;
     if (checkperm) {
         root[id] = curenv->env_id;
+    } else {
+        root[id] = 0;
     }
     return id++;
 }
@@ -532,11 +534,11 @@ int sys_sem_wait(int sem_id) {
         return -E_NO_SEM;
     }
     if (root[sem_id]) {
-        int id = curenv->env_id;
-        while (id && id != root[sem_id]) {
-            id = envs[ENVX(id)].env_parent_id;
+        int fa_id = curenv->env_id;
+        while (fa_id && fa_id != root[sem_id]) {
+            fa_id = envs[ENVX(id)].env_parent_id;
         }
-        if (!id) {
+        if (!fa_id) {
             return -E_NO_SEM;
         }
     }
@@ -551,11 +553,11 @@ int sys_sem_post(int sem_id) {
         return -E_NO_SEM;
     }
     if (root[sem_id]) {
-        int id = curenv->env_id;
-        while (id && id != root[sem_id]) {
-            id = envs[ENVX(id)].env_parent_id;
+        int fa_id = curenv->env_id;
+        while (fa_id && fa_id != root[sem_id]) {
+            fa_id = envs[ENVX(id)].env_parent_id;
         }
-        if (!id) {
+        if (!fa_id) {
             return -E_NO_SEM;
         }
     }
@@ -567,11 +569,11 @@ int sys_sem_getvalue(int sem_id){
         return -E_NO_SEM;
     }
     if (root[sem_id]) {
-        int id = curenv->env_id;
-        while (id && id != root[sem_id]) {
-            id = envs[ENVX(id)].env_parent_id;
+        int fa_id = curenv->env_id;
+        while (fa_id && fa_id != root[sem_id]) {
+            fa_id = envs[ENVX(id)].env_parent_id;
         }
-        if (!id) {
+        if (!fa_id) {
             return -E_NO_SEM;
         }
     }
@@ -584,11 +586,11 @@ int sys_sem_getid(const char *name) {
         return -E_NO_SEM;
     }
     if (root[sem_id]) {
-        int id = curenv->env_id;
-        while (id && id != root[sem_id]) {
-            id = envs[ENVX(id)].env_parent_id;
+        int fa_id = curenv->env_id;
+        while (fa_id && fa_id != root[sem_id]) {
+            fa_id = envs[ENVX(id)].env_parent_id;
         }
-        if (!id) {
+        if (!fa_id) {
             return -E_NO_SEM;
         }
     }
