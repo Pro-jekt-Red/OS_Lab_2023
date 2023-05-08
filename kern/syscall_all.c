@@ -532,19 +532,20 @@ int sys_sem_init(const char *name, int init_value, int checkperm){
     }
     return id++;
 }
-extern struct Env envs[];
+
 int sys_sem_wait(int sem_id) {
     if (sem_id >= id) {
         return -E_NO_SEM;
     }
-    if (root[sem_id]) {
-        int fa_id = curenv->env_id;
-        while (fa_id && fa_id != root[sem_id]) {
-            fa_id = envs[ENVX(fa_id)].env_parent_id;
+    if (root[sem_id] && curenv->env_id != root[sem_id]) {
+        struct Env *tmp = curenv;
+        u_int fa = 0;
+        while (tmp->env_parent_id && fa != root[sem_id]) {
+            fa = tmp->env_parent_id;
+            try(envid2env(fa, &tmp, 0));
         }
-        if (!fa_id) {
+        if (fa != root[sem_id])
             return -E_NO_SEM;
-        }
     }
     if (!val[sem_id]) {
         return -114514;
@@ -556,14 +557,15 @@ int sys_sem_post(int sem_id) {
     if (sem_id >= id) {
         return -E_NO_SEM;
     }
-    if (root[sem_id]) {
-        int fa_id = curenv->env_id;
-        while (fa_id && fa_id != root[sem_id]) {
-            fa_id = envs[ENVX(fa_id)].env_parent_id;
+    if (root[sem_id] && curenv->env_id != root[sem_id]) {
+        struct Env *tmp = curenv;
+        u_int fa = 0;
+        while (tmp->env_parent_id && fa != root[sem_id]) {
+            fa = tmp->env_parent_id;
+            try(envid2env(fa, &tmp, 0));
         }
-        if (!fa_id) {
+        if (fa != root[sem_id])
             return -E_NO_SEM;
-        }
     }
     val[sem_id]++;
     return 0;
@@ -572,14 +574,15 @@ int sys_sem_getvalue(int sem_id){
     if (sem_id >= id) {
         return -E_NO_SEM;
     }
-    if (root[sem_id]) {
-        int fa_id = curenv->env_id;
-        while (fa_id && fa_id != root[sem_id]) {
-            fa_id = envs[ENVX(fa_id)].env_parent_id;
+    if (root[sem_id] && curenv->env_id != root[sem_id]) {
+        struct Env *tmp = curenv;
+        u_int fa = 0;
+        while (tmp->env_parent_id && fa != root[sem_id]) {
+            fa = tmp->env_parent_id;
+            try(envid2env(fa, &tmp, 0));
         }
-        if (fa_id != root[sem_id]) {
+        if (fa != root[sem_id])
             return -E_NO_SEM;
-        }
     }
     return val[sem_id];
 }
