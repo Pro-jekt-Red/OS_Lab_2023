@@ -579,7 +579,7 @@ int sys_sem_getvalue(int sem_id){
 }
 int sys_sem_getid(const char *name) {
     int sem_id = 0;
-    for (; strcpy(sem_name[sem_id], name) && sem_id < id; sem_id++);
+    for (; strcmp(sem_name[sem_id], name) && sem_id < id; sem_id++);
     if (sem_id >= id) {
         return -E_NO_SEM;
     }
