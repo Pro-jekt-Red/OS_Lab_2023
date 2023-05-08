@@ -516,6 +516,19 @@ int sys_read_dev(u_int va, u_int pa, u_int len) {
 
     return 0;
 }
+int ba = 0, cnt = 0;
+int env_table[1<<20];
+void sys_barrier_set(int n) {
+    ba = n;
+}
+void sys_barrier_try_wait() {
+    if (!env_table[curenv->env_id]++){
+        cnt++;
+    }
+    if (cnt < ba)
+        return -114514;
+    return 0;
+}
 
 void *syscall_table[MAX_SYSNO] = {
     [SYS_putchar] = sys_putchar,
@@ -536,6 +549,8 @@ void *syscall_table[MAX_SYSNO] = {
     [SYS_cgetc] = sys_cgetc,
     [SYS_write_dev] = sys_write_dev,
     [SYS_read_dev] = sys_read_dev,
+    [SYS_barrier_try_wait] = sys_barrier_try_wait,
+    [SYS_barrier_set] = sys_barrier_set
 };
 
 /* Overview:

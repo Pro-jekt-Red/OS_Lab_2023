@@ -65,6 +65,13 @@ int syscall_cgetc() {
 	return msyscall(SYS_cgetc);
 }
 
+void syscall_barrier_set(int n){
+	msyscall(SYS_barrier_set, n);
+}
+int syscall_barrier_try_wait(void){
+	return msyscall(SYS_barrier_try_wait);
+}
+
 int syscall_write_dev(void *va, u_int dev, u_int len) {
 	/* Exercise 5.2: Your code here. (1/2) */
 

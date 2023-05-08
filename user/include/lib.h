@@ -68,10 +68,15 @@ int syscall_ipc_recv(void *dstva);
 int syscall_cgetc();
 int syscall_write_dev(void *, u_int, u_int);
 int syscall_read_dev(void *, u_int, u_int);
-
+//lab4-2-exam
+void syscall_barrier_set(int n);
+int syscall_barrier_try_wait(void);
 // ipc.c
 void ipc_send(u_int whom, u_int val, const void *srcva, u_int perm);
 u_int ipc_recv(u_int *whom, void *dstva, u_int *perm);
+// lab4-2-exam
+void barrier_alloc(int n);
+void barrier_wait(void);
 
 // wait.c
 void wait(u_int envid);
