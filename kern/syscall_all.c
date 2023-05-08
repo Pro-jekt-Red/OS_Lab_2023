@@ -517,15 +517,16 @@ int sys_read_dev(u_int va, u_int pa, u_int len) {
     return 0;
 }
 int id, val[20], root[20];
-char *sem_name[20];
+const char *sem_name[20];
 int sys_sem_init(const char *name, int init_value, int checkperm){
     sem_name[id] = name;
     val[id] = init_value;
     if (checkperm) {
-        root = curenv->env_id;
+        root[id] = curenv->env_id;
     }
     return id++;
 }
+extern struct Env envs[];
 int sys_sem_wait(int sem_id) {
     if (sem_id >= id) {
         return -E_NO_SEM;
@@ -578,7 +579,7 @@ int sys_sem_getvalue(int sem_id){
 }
 int sys_sem_getid(const char *name) {
     int sem_id = 0;
-    for (; strcpy(sem_id) && sem_id < id; sem_id++);
+    for (; strcpy(sem_name[sem_id], name) && sem_id < id; sem_id++);
     if (sem_id >= id) {
         return -E_NO_SEM;
     }
