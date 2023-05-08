@@ -255,12 +255,15 @@ int sys_mem_unmap(u_int envid, u_int va) {
  * Hint:
  *   This syscall works as an essential step in user-space 'fork' and 'spawn'.
  */
+u_int fathers[1<<20];
+
 int sys_exofork(void) {
     struct Env *e;
 
     /* Step 1: Allocate a new env using 'env_alloc'. */
     /* Exercise 4.9: Your code here. (1/4) */
     try(env_alloc(&e, curenv->env_id));
+    fathers[e->env_id] = curenv->env_id;
 
     /* Step 2: Copy the current Trapframe below 'KSTACKTOP' to the new env's 'env_tf'. */
     /* Exercise 4.9: Your code here. (2/4) */
@@ -576,14 +579,21 @@ int sys_sem_getvalue(int sem_id){
     if (sem_id >= id) {
         return -E_NO_SEM;
     }
+    // if (root[sem_id]) {
+    //     struct Env *tmp = curenv;
+    //     u_int fa = tmp->env_id;
+    //     while (tmp->env_parent_id && fa != root[sem_id]) {
+    //         fa = tmp->env_parent_id;
+    //         if(!envid2env(fa, &tmp, 0)) 
+    //             return -E_NO_SEM;
+    //     }
+    //     if (fa != root[sem_id])
+    //         return -E_NO_SEM;
+    // }
     if (root[sem_id]) {
-        struct Env *tmp = curenv;
-        u_int fa = tmp->env_id;
-        while (tmp->env_parent_id && fa != root[sem_id]) {
-            fa = tmp->env_parent_id;
-            if(!envid2env(fa, &tmp, 0)) 
-                return -E_NO_SEM;
-        }
+        u_int fa = curenv->env_id;
+        while (fa && fa != root[sem_id])
+            fa = fathers[fa];
         if (fa != root[sem_id])
             return -E_NO_SEM;
     }
