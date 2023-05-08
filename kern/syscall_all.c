@@ -537,12 +537,13 @@ int sys_sem_wait(int sem_id) {
     if (sem_id >= id) {
         return -E_NO_SEM;
     }
-    if (root[sem_id] && curenv->env_id != root[sem_id]) {
+    if (root[sem_id]) {
         struct Env *tmp = curenv;
-        u_int fa = 0;
+        u_int fa = tmp->env_id;
         while (tmp->env_parent_id && fa != root[sem_id]) {
             fa = tmp->env_parent_id;
-            try(envid2env(fa, &tmp, 0));
+            if(!envid2env(fa, &tmp, 0)) 
+                return -E_NO_SEM;;
         }
         if (fa != root[sem_id])
             return -E_NO_SEM;
@@ -557,12 +558,13 @@ int sys_sem_post(int sem_id) {
     if (sem_id >= id) {
         return -E_NO_SEM;
     }
-    if (root[sem_id] && curenv->env_id != root[sem_id]) {
+    if (root[sem_id]) {
         struct Env *tmp = curenv;
-        u_int fa = 0;
+        u_int fa = tmp->env_id;
         while (tmp->env_parent_id && fa != root[sem_id]) {
             fa = tmp->env_parent_id;
-            try(envid2env(fa, &tmp, 0));
+            if(!envid2env(fa, &tmp, 0)) 
+                return -E_NO_SEM;;
         }
         if (fa != root[sem_id])
             return -E_NO_SEM;
@@ -574,12 +576,13 @@ int sys_sem_getvalue(int sem_id){
     if (sem_id >= id) {
         return -E_NO_SEM;
     }
-    if (root[sem_id] && curenv->env_id != root[sem_id]) {
+    if (root[sem_id]) {
         struct Env *tmp = curenv;
-        u_int fa = 0;
+        u_int fa = tmp->env_id;
         while (tmp->env_parent_id && fa != root[sem_id]) {
             fa = tmp->env_parent_id;
-            try(envid2env(fa, &tmp, 0));
+            if(!envid2env(fa, &tmp, 0)) 
+                return -E_NO_SEM;;
         }
         if (fa != root[sem_id])
             return -E_NO_SEM;
@@ -592,12 +595,13 @@ int sys_sem_getid(const char *name) {
     if (sem_id >= id) {
         return -E_NO_SEM;
     }
-    if (root[sem_id] && curenv->env_id != root[sem_id]) {
+    if (root[sem_id]) {
         struct Env *tmp = curenv;
-        u_int fa = 0;
+        u_int fa = tmp->env_id;
         while (tmp->env_parent_id && fa != root[sem_id]) {
             fa = tmp->env_parent_id;
-            try(envid2env(fa, &tmp, 0));
+            if(!envid2env(fa, &tmp, 0)) 
+                return -E_NO_SEM;;
         }
         if (fa != root[sem_id])
             return -E_NO_SEM;
