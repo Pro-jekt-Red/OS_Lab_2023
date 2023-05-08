@@ -539,7 +539,7 @@ int sys_sem_wait(int sem_id) {
     if (root[sem_id]) {
         int fa_id = curenv->env_id;
         while (fa_id && fa_id != root[sem_id]) {
-            fa_id = envs[ENVX(id)].env_parent_id;
+            fa_id = envs[ENVX(fa_id)].env_parent_id;
         }
         if (!fa_id) {
             return -E_NO_SEM;
@@ -558,7 +558,7 @@ int sys_sem_post(int sem_id) {
     if (root[sem_id]) {
         int fa_id = curenv->env_id;
         while (fa_id && fa_id != root[sem_id]) {
-            fa_id = envs[ENVX(id)].env_parent_id;
+            fa_id = envs[ENVX(fa_id)].env_parent_id;
         }
         if (!fa_id) {
             return -E_NO_SEM;
@@ -574,9 +574,9 @@ int sys_sem_getvalue(int sem_id){
     if (root[sem_id]) {
         int fa_id = curenv->env_id;
         while (fa_id && fa_id != root[sem_id]) {
-            fa_id = envs[ENVX(id)].env_parent_id;
+            fa_id = envs[ENVX(fa_id)].env_parent_id;
         }
-        if (!fa_id) {
+        if (fa_id != root[sem_id]) {
             return -E_NO_SEM;
         }
     }
@@ -591,7 +591,7 @@ int sys_sem_getid(const char *name) {
     if (root[sem_id]) {
         int fa_id = curenv->env_id;
         while (fa_id && fa_id != root[sem_id]) {
-            fa_id = envs[ENVX(id)].env_parent_id;
+            fa_id = envs[ENVX(fa_id)].env_parent_id;
         }
         if (!fa_id) {
             return -E_NO_SEM;
