@@ -533,7 +533,7 @@ int sys_sem_init(const char *name, int init_value, int checkperm){
     } else {
         root[id] = 0;
     }
-    debugf("%d: %x\n", id, root[id]);
+    printk("%d: %x\n", id, root[id]);
     return id++;
 }
 
@@ -600,11 +600,11 @@ int sys_sem_getid(const char *name) {
     }
     if (root[sem_id]) {
         u_int fa = curenv->env_id;
-        debugf("get %d: %x\n", sem_id, root[sem_id]);
-        debugf("cur %x\n", fa);
+        printk("get %d: %x\n", sem_id, root[sem_id]);
+        printk("cur %x\n", fa);
         while (fa && fa != root[sem_id])
             {fa = fathers[fa];
-            debugf("fa %x\n", fa);}
+            printk("fa %x\n", fa);}
         if (fa != root[sem_id])
             return -E_NO_SEM;
     }
