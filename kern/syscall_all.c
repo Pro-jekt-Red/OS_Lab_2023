@@ -538,7 +538,7 @@ int sys_sem_init(const char *name, int init_value, int checkperm){
 }
 
 int sys_sem_wait(int sem_id) {
-    if (sem_id >= id) {
+    if (sem_id >= id || sem_id < 0) {
         return -E_NO_SEM;
     }
     if (root[sem_id]) {
@@ -555,7 +555,7 @@ int sys_sem_wait(int sem_id) {
     return 0;
 }
 int sys_sem_post(int sem_id) {
-    if (sem_id >= id) {
+    if (sem_id >= id || sem_id < 0) {
         return -E_NO_SEM;
     }
     if (root[sem_id]) {
@@ -569,7 +569,7 @@ int sys_sem_post(int sem_id) {
     return 0;
 }
 int sys_sem_getvalue(int sem_id){
-    if (sem_id >= id) {
+    if (sem_id >= id || sem_id < 0) {
         return -E_NO_SEM;
     }
     // if (root[sem_id]) {
