@@ -384,7 +384,7 @@ int sys_ipc_recv(u_int dstva) {
     curenv->env_status = ENV_NOT_RUNNABLE;
     TAILQ_REMOVE(&env_sched_list, curenv, env_sched_link);
     // TAILQ_DEBUG(RECV_REMOVE, curenv, temp_elm, &env_sched_list, env_sched_link);
-    printk("\n");
+    // printk("\n");
 
     /* Step 5: Give up the CPU and block until a message is received. */
     ((struct Trapframe *)KSTACKTOP - 1)->regs[2] = 0;
