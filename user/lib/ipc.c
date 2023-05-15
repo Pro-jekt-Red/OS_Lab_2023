@@ -37,3 +37,24 @@ u_int ipc_recv(u_int *whom, void *dstva, u_int *perm) {
 
 	return env->env_ipc_value;
 }
+
+u_int get_time(u_int *us) {
+	u_int s;
+	syscall_read_dev(&s, DEV_RTC_ADDRESS + DEV_RTC_TRIGGER_READ, 1);
+	syscall_read_dev(&s, DEV_RTC_ADDRESS + DEV_RTC_SEC, 4);
+	syscall_read_dev(&us, DEV_RTC_ADDRESS + DEV_RTC_USEC, 4);
+	return s;
+}
+void usleep(u_int us) {
+	u_int start_us;
+	u_int start_s = get_time(&start_us);
+	while (1) {
+		u_int time_us;
+	    u_int time_s = get_time(&start_us);
+		if (1000000ll * time_s + time_us >= 1000000ll * start_s + start_us + us) {
+			return;
+		} else {
+			syscall_yield();
+		}
+	}
+}
