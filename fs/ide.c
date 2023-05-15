@@ -35,6 +35,7 @@ int find() {
         status[min_no[0]] = 1;
         for (int i = 0; i < 32; i++) {
             if (table[i] == min_no[1]) {
+                table[i] = min_no[0];
                 ssd_erase(i);
                 break;
             }
