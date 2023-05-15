@@ -34,7 +34,7 @@ int find() {
         ide_write(0, min_no[0], tmp, 1);
         status[min_no[0]] = 1;
         for (int i = 0; i < 32; i++) {
-            if (table[i] == min_no[1] {
+            if (table[i] == min_no[1]) {
                 ssd_erase(i);
                 break;
             }
