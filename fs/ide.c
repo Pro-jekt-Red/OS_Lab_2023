@@ -18,6 +18,7 @@ int ssd_read(u_int logic_no, void *dst) {
         return -1;
     }
     ide_read(0, table[logic_no], dst, 1);
+    return 0;
 }
 int find() {
     int min[2], min_no[2];
