@@ -51,7 +51,7 @@ void usleep(u_int us) {
 	u_int start_s = get_time(&start_us);
 	while (1) {
 		u_int time_us;
-	    u_int time_s = get_time(&start_us);
+	    u_int time_s = get_time(&time_us);
 		if (1000000ll * time_s + time_us >= 1000000ll * start_s + start_us + us) {
 			return;
 		} else {
