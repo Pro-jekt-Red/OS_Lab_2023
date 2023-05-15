@@ -20,6 +20,10 @@
 /* ide.c */
 void ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs);
 void ide_write(u_int diskno, u_int secno, void *src, u_int nsecs);
+void ssd_init();
+int ssd_read(u_int logic_no, void *dst);
+void ssd_write(u_int logic_no, void *src);
+void ssd_erase(u_int logic_no);
 
 /* fs.c */
 int file_open(char *path, struct File **pfile);

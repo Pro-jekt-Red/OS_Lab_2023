@@ -7,6 +7,62 @@
 #include <lib.h>
 #include <mmu.h>
 
+int table[32], status[32], use_time[32];
+void ssd_init() {
+    for (int i = 0; i < 32; i++) {
+        table[i] = -1;
+    }
+}
+int ssd_read(u_int logic_no, void *dst) {
+    if (table[logic_no] == -1) {
+        return -1;
+    }
+    ide_read(0, table[logic_no], dst, 1);
+}
+int find() {
+    int min[2], min_no[2];
+    min[0] = min[1] = 0x7fffffff;
+    min_no[0] = min_no[1] = -1;
+    for (int i = 0; i < 32; i++) {
+        if (use_time[i] < min[status[i]]) {
+            min[status[i]] = use_time[i], min_no[status[i]] = i;
+        }
+    }
+    if (min[0] >= 5){
+        char tmp[512];
+        ide_read(0, min_no[1], tmp, 1);
+        ide_write(0, min_no[0], tmp, 1);
+        status[min_no[0]] = 1;
+        for (int i = 0; i < 32; i++) {
+            if (table[i] == min_no[1] {
+                ssd_erase(i);
+                break;
+            }
+        }
+        return min_no[1];
+    }
+    return min_no[0];
+}
+void ssd_write(u_int logic_no, void *src) {
+    if (table[logic_no] == -1) {
+        ssd_erase(logic_no);
+    }
+    int pno = find();
+    ide_write(0, pno, src, 1);
+    status[pno] = 1;
+    table[logic_no] = pno;
+}
+void ssd_erase(u_int logic_no) {
+    static char empty[512] = {};
+    if (table[logic_no] == -1) {
+        return;
+    }
+    ide_write(0, table[logic_no], empty, 1);
+    use_time[table[logic_no]]++;
+    status[table[logic_no]] = 0;
+    table[logic_no] = -1;
+}
+
 // Overview:
 //  read data from IDE disk. First issue a read request through
 //  disk register and then copy data from disk buffer
