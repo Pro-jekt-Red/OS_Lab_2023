@@ -93,6 +93,7 @@ void serve_open(u_int envid, struct Fsreq_open *rq) {
 
 	// Find a file id.
 	if ((r = open_alloc(&o)) < 0) {
+		user_panic("open_alloc error: %e", r);
 		ipc_send(envid, r, 0, 0);
 	}
 
