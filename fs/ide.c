@@ -44,7 +44,7 @@ int find() {
     return min_no[0];
 }
 void ssd_write(u_int logic_no, void *src) {
-    if (table[logic_no] == -1) {
+    if (table[logic_no] != -1) {
         ssd_erase(logic_no);
     }
     int pno = find();
