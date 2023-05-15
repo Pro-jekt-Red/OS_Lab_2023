@@ -3,6 +3,7 @@
 #include <env.h>
 #include <lib.h>
 #include <mmu.h>
+#include <drivers/dev_rtc.h>
 
 // Send val to whom.  This function keeps trying until
 // it succeeds.  It should panic() on any error other than
