@@ -154,6 +154,8 @@ static int pipe_read(struct Fd *fd, void *vbuf, u_int n, u_int offset) {
     }
 
     // user_panic("pipe_read not implemented");
+	
+	return n;
 }
 
 /* Overview:
