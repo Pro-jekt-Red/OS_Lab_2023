@@ -131,7 +131,7 @@ int spawn(char *prog, char **argv) {
     // If the syscall fails, set 'r' and 'goto err'.
     u_int child;
     /* Exercise 6.4: Your code here. (2/6) */
-    if ((r = syscall_exofork()) < 0) {
+    if ((child = syscall_exofork()) < 0) {
         goto err;
     }
 
@@ -178,7 +178,7 @@ int spawn(char *prog, char **argv) {
         }
     }
     close(fd);
-	
+
     struct Trapframe tf = envs[ENVX(child)].env_tf;
     tf.cp0_epc = entrypoint;
     tf.regs[29] = sp;
