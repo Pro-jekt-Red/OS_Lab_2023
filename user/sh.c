@@ -128,7 +128,7 @@ int parsecmd(char **argv, int *rightpipe) {
             int p[2];
             /* Exercise 6.5: Your code here. (3/3) */
 			try(pipe(p));
-			try(*rightpipe = fork());
+			*rightpipe = fork();
 			if (*rightpipe == 0) {
 				try(dup(p[0], 0));
 				try(close(p[0]));
