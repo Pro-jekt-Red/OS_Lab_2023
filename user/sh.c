@@ -88,18 +88,9 @@ int parsecmd(char **argv, int *rightpipe) {
             }
             // Open 't' for reading, dup it onto fd 0, and then close the original fd.
             /* Exercise 6.5: Your code here. (1/3) */
-            if ((fd = open(t, O_RDONLY)) < 0) {
-                debugf("err when open %s for read: %d\n", t, fd);
-                exit();
-            }
-            if ((r = dup(fd, 0)) < 0) {
-                debugf("err when dup %d: %d\n", fd, r);
-                exit();
-            }
-            if ((r = close(fd)) < 0) {
-                debugf("err when close %d: %d\n", fd, r);
-                exit();
-            }
+            try(fd = open(t, O_RDONLY));
+            try(dup(fd, 0));
+            try(close(fd));
 
             // user_panic("< redirection not implemented");
 
@@ -111,18 +102,9 @@ int parsecmd(char **argv, int *rightpipe) {
             }
             // Open 't' for writing, dup it onto fd 1, and then close the original fd.
             /* Exercise 6.5: Your code here. (2/3) */
-			if ((fd = open(t, O_WRONLY | O_CREAT)) < 0) {
-				debugf("err when open %s for write: %d\n", t, fd);
-				exit();
-			}
-			if ((r = dup(fd, 1)) < 0) {
-				debugf("err when dup %d: %d\n", fd, r);
-				exit();
-			}
-			if ((r = close(fd)) < 0) {
-				debugf("err when close %d: %d\n", fd, r);
-				exit();
-			}
+			try(fd = open(t, O_WRONLY | O_CREAT));
+			try(dup(fd, 1));
+			try(close(fd));
 
             // user_panic("> redirection not implemented");
 
@@ -145,42 +127,18 @@ int parsecmd(char **argv, int *rightpipe) {
              */
             int p[2];
             /* Exercise 6.5: Your code here. (3/3) */
-			if ((r = pipe(p)) < 0) {
-				debugf("err when pipe: %d\n", r);
-				exit();
-			}
-			if ((*rightpipe = fork()) < 0) {
-				debugf("err when fork: %d\n", *rightpipe);
-				exit();
-			}
+			try(pipe(p));
+			try(*rightpipe = fork());
 			if (*rightpipe == 0) {
-				if ((r = dup(p[0], 0)) < 0) {
-					debugf("err when dup %d: %d\n", p[0], r);
-					exit();
-				}
-				if ((r = close(p[0])) < 0) {
-					debugf("err when close %d: %d\n", p[0], r);
-					exit();
-				}
-				if ((r = close(p[1])) < 0) {
-					debugf("err when close %d: %d\n", p[1], r);
-					exit();
-				}
+				try(dup(p[0], 0));
+				try(close(p[0]));
+				try(close(p[1]));
 				return parsecmd(argv, rightpipe);
 			}
 			else {
-				if ((r = dup(p[1], 1)) < 0) {
-					debugf("err when dup %d: %d\n", p[1], r);
-					exit();
-				}
-				if ((r = close(p[1])) < 0) {
-					debugf("err when close %d: %d\n", p[1], r);
-					exit();
-				}
-				if ((r = close(p[0])) < 0) {
-					debugf("err when close %d: %d\n", p[0], r);
-					exit();
-				}
+				try(dup(p[1], 1));
+				try(close(p[1]));
+				try(close(p[0]));
 				return argc;
 			}
 
