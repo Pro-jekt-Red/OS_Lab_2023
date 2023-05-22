@@ -51,18 +51,18 @@ RESET:
 	size = ffd->f_file.f_size;
 	fileid = ffd->f_fileid;
 
+	// Step 4: Alloc pages and map the file content using 'fsipc_map'.
+	for (int i = 0; i < size; i += BY2PG) {
+		/* Exercise 5.9: Your code here. (4/5) */
+		try(fsipc_map(fileid, i, va + i));
+	}
+
 	if (ffd->f_file.f_type == FTYPE_LNK) {
 		char buf[1024];
 		strcpy(buf, va);
 		debugf("DEBUG %s\n", buf);
 		try(fsipc_open(buf, mode, fd));
 		goto RESET;
-	}
-
-	// Step 4: Alloc pages and map the file content using 'fsipc_map'.
-	for (int i = 0; i < size; i += BY2PG) {
-		/* Exercise 5.9: Your code here. (4/5) */
-		try(fsipc_map(fileid, i, va + i));
 	}
 
 	// Step 5: Return the number of file descriptor using 'fd2num'.
