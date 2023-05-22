@@ -53,7 +53,7 @@ RESET:
 
 	if (ffd->f_file.f_type == FTYPE_LNK) {
 		char buf[1024];
-		file_read(fd, buf, 1024, 0);
+		strcpy(buf, va);
 		debugf("DEBUG %s\n", buf);
 		try(fsipc_open(buf, mode, fd));
 		goto RESET;
