@@ -283,7 +283,7 @@ void write_symlink(struct File *dirf, const char *path) {
     }
 
 	// Your code here: 使用 readlink() 函数读取链接文件指向的路径，将其写入到下一个可用的磁盘块
-    uint32_t size = readlink(dirf, disk[nextbno].data, sizeof(disk[0].data));
+    uint32_t size = readlink(path, (char *)disk[nextbno].data, sizeof(disk[0].data));
 
 	const char *fname = strrchr(path, '/');
 	if (fname) {
@@ -359,7 +359,7 @@ int main(int argc, char **argv) {
         } else if (S_ISREG(stat_buf.st_mode)) {
             printf("writing regular file '%s' into disk\n", name);
             write_file(&super.s_root, name);
-        } else if (S_ISLNK(stat_buf.stmode)) {
+        } else if (S_ISLNK(stat_buf.st_mode)) {
             printf("writing symlink '%s' into disk\n", name);
             write_symlink(&super.s_root, name);
         } else {
