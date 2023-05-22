@@ -38,6 +38,7 @@ int open(const char *path, int mode) {
 	/* Exercise 5.9: Your code here. (2/5) */
 	try(fsipc_open(path, mode, fd));
 
+RESET:
 	// Step 3: Set 'va' to the address of the page where the 'fd''s data is cached, using
 	// 'fd2data'. Set 'size' and 'fileid' correctly with the value in 'fd' as a 'Filefd'.
 	char *va;
@@ -48,6 +49,13 @@ int open(const char *path, int mode) {
 	ffd = (struct Filefd *)fd;
 	size = ffd->f_file.f_size;
 	fileid = ffd->f_fileid;
+
+	while (ffd->f_file.f_type == FTYPE_LNK) {
+		char buf[1024];
+		file_read(fd, buf, 1024, 0);
+		try(fsipc_open(buf, mode, fd));
+		goto RESET;
+	}
 
 	// Step 4: Alloc pages and map the file content using 'fsipc_map'.
 	for (int i = 0; i < size; i += BY2PG) {
