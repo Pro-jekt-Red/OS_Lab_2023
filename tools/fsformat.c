@@ -284,7 +284,7 @@ void write_symlink(struct File *dirf, const char *path) {
 
 	// Your code here: 使用 readlink() 函数读取链接文件指向的路径，将其写入到下一个可用的磁盘块
     uint32_t size = readlink(path, (char *)disk[nextbno].data, sizeof(disk[0].data));
-    printf("%s", (char *)disk[nextbno].data);
+    // printf("%s", (char *)disk[nextbno].data);
 
 	const char *fname = strrchr(path, '/');
 	if (fname) {
