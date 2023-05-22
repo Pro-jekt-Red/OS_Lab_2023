@@ -51,13 +51,13 @@ RESET:
 	size = ffd->f_file.f_size;
 	fileid = ffd->f_fileid;
 
-	// if (ffd->f_file.f_type == FTYPE_LNK) {
-	// 	char buf[1024];
-	// 	file_read(fd, buf, 1024, 0);
-	// 	debugf("DEBUG %s\n", buf);
-	// 	try(fsipc_open(buf, mode, fd));
-	// 	goto RESET;
-	// }
+	if (ffd->f_file.f_type == FTYPE_LNK) {
+		char buf[1024];
+		file_read(fd, buf, 1024, 0);
+		debugf("DEBUG %s\n", buf);
+		try(fsipc_open(buf, mode, fd));
+		goto RESET;
+	}
 
 	// Step 4: Alloc pages and map the file content using 'fsipc_map'.
 	for (int i = 0; i < size; i += BY2PG) {
