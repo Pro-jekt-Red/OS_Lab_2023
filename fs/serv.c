@@ -72,10 +72,10 @@ int open_lookup(u_int envid, u_int fileid, struct Open **po) {
 	struct Open *o;
 
 	o = &opentab[fileid % MAXOPEN];
-
-	// if (pageref(o->o_ff) == 1 || o->o_fileid != fileid) {
-	// 	return -E_INVAL;
-	// }
+	if (pageref(o->o_ff) == 1 || o->o_fileid != fileid) {
+		// debugf("%d", o->o_fileid);
+ 	    return -E_INVAL;
+	}
 
 	*po = o;
 	return 0;

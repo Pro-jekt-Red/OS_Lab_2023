@@ -63,13 +63,14 @@ int open(const char *path, int mode) {
 int openat(int dirfd, const char *path, int mode) {
 	// Step 1: Alloc a new 'Fd' using 'fd_alloc' in fd.c.
 	// Hint: return the error code if failed.
-	struct Fd *fd;
+	struct Fd *fd, *dir;
 	/* Exercise 5.9: Your code here. (1/5) */
+	try(fd_lookup(dirfd, &dir));
 	try(fd_alloc(&fd));
 
 	// Step 2: Prepare the 'fd' using 'fsipc_open' in fsipc.c.
 	/* Exercise 5.9: Your code here. (2/5) */
-	try(fsipc_openat(dirfd, path, mode, fd));
+	try(fsipc_openat(((struct Filefd *)dir)->f_fileid, path, mode, fd));
 
 	// Step 3: Set 'va' to the address of the page where the 'fd''s data is cached, using
 	// 'fd2data'. Set 'size' and 'fileid' correctly with the value in 'fd' as a 'Filefd'.
