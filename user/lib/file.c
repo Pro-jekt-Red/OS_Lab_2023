@@ -39,6 +39,7 @@ int open(const char *path, int mode) {
 	try(fsipc_open(path, mode, fd));
 
 RESET:
+	1==1;
 	// Step 3: Set 'va' to the address of the page where the 'fd''s data is cached, using
 	// 'fd2data'. Set 'size' and 'fileid' correctly with the value in 'fd' as a 'Filefd'.
 	char *va;
