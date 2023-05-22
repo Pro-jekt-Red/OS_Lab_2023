@@ -73,9 +73,9 @@ int open_lookup(u_int envid, u_int fileid, struct Open **po) {
 
 	o = &opentab[fileid % MAXOPEN];
 
-	if (pageref(o->o_ff) == 1 || o->o_fileid != fileid) {
-		return -E_INVAL;
-	}
+	// if (pageref(o->o_ff) == 1 || o->o_fileid != fileid) {
+	// 	return -E_INVAL;
+	// }
 
 	*po = o;
 	return 0;
@@ -131,7 +131,7 @@ void serve_openat(u_int envid, struct Fsreq_openat *rq) {
 
 	struct Open *pOpen;
 	if ((r = open_lookup(envid, rq->dir_fileid, &pOpen)) < 0) {
-		ipc_send(envid, -rq->dir_fileid-1000000, 0, 0);
+		ipc_send(envid, r, 0, 0);
 		return;
 	}
 	struct File *dir = pOpen->o_file;
